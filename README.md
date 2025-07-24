@@ -18,7 +18,8 @@ Este projeto é um sistema de agendamento de turnos destinado a taxistas que pre
 
 ### 📌 Diagrama de Casos de Uso
 
-![Diagrama de Casos de Uso](https://drive.google.com/file/d/1rlWsZLTiEm6y4cQvllX5Dk3r6GLCnoG_/view?usp=sharing)
+![Diagrama de Casos de Uso] - Página 1
+https://drive.google.com/file/d/1rlWsZLTiEm6y4cQvllX5Dk3r6GLCnoG_/view?usp=sharing
 
 Este diagrama mostra os principais casos de uso do sistema, incluindo as ações dos taxistas e do administrador.
 
@@ -26,7 +27,9 @@ Este diagrama mostra os principais casos de uso do sistema, incluindo as ações
 
 ### 📌 Diagrama de Classes
 
-![Diagrama de Classes](https://drive.google.com/file/d/1rlWsZLTiEm6y4cQvllX5Dk3r6GLCnoG_/view?usp=sharing)
+![Diagrama de Classes] - Página 2
+
+https://drive.google.com/file/d/1rlWsZLTiEm6y4cQvllX5Dk3r6GLCnoG_/view?usp=sharing
 
 Este diagrama representa a estrutura básica do sistema, incluindo as entidades principais como Taxista, Turno e Agendamento.
 
