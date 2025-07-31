@@ -27,18 +27,54 @@ public class UserView {
         }
     }
 
+    private boolean isValidLogin(String login) {
+        if (login == null || login.trim().isEmpty()) {
+            log.warn("Erro: o login não pode ser vazio.");
+            return false;
+        }
+        if (login.length() > 12) {
+            log.warn("Erro: o login deve ter no máximo 12 caracteres.");
+            return false;
+        }
+        if (login.matches(".*\\d.*")) {
+            log.warn("Erro: o login não pode conter números.");
+            return false;
+        }
+        return true;
+    }
+
     public void createUser(){
         User newUser = new User();
         log.info(LOGIN);
-        newUser.setLogin(scanner.nextLine());
+        String login = scanner.nextLine();
+        
+        if (!isValidLogin(login)) {
+            return;
+        }
+        newUser.setLogin(login);
+
         log.info("Senha: ");
         newUser.setPassword(scanner.nextLine());
+        
         if(userManager.createUser(newUser)){
             log.info("Usuario criado com sucesso!");
         }else{
             log.warn("Erro ao criar usuario.");
         }
     }
+
+    // public void createUser(){
+    //     User newUser = new User();
+    //     log.info(LOGIN);
+    //     newUser.setLogin(scanner.nextLine());
+    //     log.info("Senha: ");
+    //     newUser.setPassword(scanner.nextLine());
+    //     if(userManager.createUser(newUser)){
+    //         log.info("Usuario criado com sucesso!");
+    //     }else{
+    //         log.warn("Erro ao criar usuario.");
+    //     }
+    // }
 
     public void updateUser(){
         User newUser = new User();
