@@ -23,7 +23,7 @@ public class UserView {
         if (users.isEmpty()) {
             log.info("Nenhum usuario cadastrado.");
         } else {
-            users.forEach(user -> log.info("Usuario: {}", user.getLogin()));
+            users.forEach(user -> log.info("Usuario: {}", user));
         }
     }
 
@@ -46,6 +46,9 @@ public class UserView {
         newUser.setLogin(scanner.nextLine());
         log.info("Nova senha: ");
         newUser.setPassword(scanner.nextLine());
+        log.info("ID: ");
+        newUser.setId(scanner.nextInt());
+        scanner.nextLine();
         if(userManager.updateUser(newUser)){
             log.info("Usuario atualizado com sucesso!");
         }else{
@@ -59,7 +62,7 @@ public class UserView {
         user.setLogin(scanner.nextLine());
         log.info("Senha: ");
         user.setPassword(scanner.nextLine());
-        if (userManager.deleetUser(user)){
+        if (userManager.deleteUser(user)){
             log.info("Usuario deletado com sucesso!");
         }else{
             log.warn("Erro ao deletar usuario.");

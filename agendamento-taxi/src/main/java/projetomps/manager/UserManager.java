@@ -27,9 +27,10 @@ public class UserManager {
     }
 
     // Metodo para deletar usuario
-    public boolean deleetUser(User user){
+    public boolean deleteUser(User user){
         log.info("Deletando usuario: {}", user.getLogin());
-        return userRepository.delete(user);
+        var realUser = userRepository.findOneByLogin(user.getLogin());
+        return userRepository.delete(realUser);
     }
 
     // Metodo para atualizar usuario
