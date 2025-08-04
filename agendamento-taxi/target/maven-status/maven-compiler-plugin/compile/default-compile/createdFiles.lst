@@ -1,1 +1,5 @@
 projetomps\App.class
+projetomps\model\User.class
+projetomps\view\UserView.class
+projetomps\repository\UserRepository.class
+projetomps\manager\UserManager.class
