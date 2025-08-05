@@ -1,1 +1,10 @@
-projetomps\App.class
+projetomps\controller\UserController.class
+projetomps\service\UserService.class
+projetomps\view\UserView.class
+projetomps\repository\MemoryRepository.class
+projetomps\model\User.class
+projetomps\util\exception\SenhaException.class
+projetomps\Application.class
+projetomps\util\exception\RepositoryException.class
+projetomps\repository\UserRepository.class
+projetomps\util\exception\LoginException.class
