@@ -5,7 +5,7 @@ import projetomps.controller.RotationController;
 import projetomps.controller.UserController;
 import projetomps.model.Admin;
 import projetomps.model.Taxist;
-import projetomps.repository.MemoryRepository;
+import projetomps.repository.MemoryUserRepository;
 import projetomps.repository.MemoryRotationRepository;
 import projetomps.repository.RotationRepository;
 import projetomps.repository.UserRepository;
@@ -22,7 +22,7 @@ public class Application {
 
         try {
             // Injeção de dependências manual
-            UserRepository userRepository = new MemoryRepository();
+            UserRepository userRepository = new MemoryUserRepository();
             RotationRepository rotationRepository = new MemoryRotationRepository();
 
             UserService userService = new UserService(userRepository);

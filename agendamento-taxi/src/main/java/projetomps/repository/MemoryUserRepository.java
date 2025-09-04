@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
-public class MemoryRepository implements UserRepository {
+public class MemoryUserRepository implements UserRepository {
     private final List<User> users = new ArrayList<>();
     private final AtomicInteger idGenerator = new AtomicInteger(1);
     

@@ -228,7 +228,7 @@ public class TaxistView {
             if (!horariosOcupados.contains(horario)) {
                 temDisponivel = true;
             }
-            System.out.printf("│    %s    │ %-19s │%n", horario, status);
+            System.out.printf("│    %s    │ %-20s │%n", horario, status);
         }
 
         System.out.println("└─────────────┴─────────────────────┘");
@@ -394,12 +394,12 @@ public class TaxistView {
             long canceladas = minhasRotacoes.stream().filter(r -> "CANCELLED".equalsIgnoreCase(r.getStatus())).count();
 
             System.out.println("┌──────────────────────────────────────────────────────────────┐");
-            System.out.println("│                    RESUMO ESTATÍSTICO                       │");
+            System.out.println("│                    RESUMO ESTATÍSTICO                        │");
             System.out.println("├──────────────────────────────────────────────────────────────┤");
-            System.out.printf("│ 📊 Total de rotações: %-34s │%n", total);
-            System.out.printf("│ ✅ Confirmadas: %-41s │%n", confirmadas);
-            System.out.printf("│ ⏳ Pendentes: %-43s │%n", pendentes);
-            System.out.printf("│ ❌ Canceladas: %-42s │%n", canceladas);
+            System.out.printf("│ 📊 Total de rotações: %-39s │%n", total);
+            System.out.printf("│ ✅ Confirmadas: %-45s │%n", confirmadas);
+            System.out.printf("│ ⏳ Pendentes: %-47s │%n", pendentes);
+            System.out.printf("│ ❌ Canceladas: %-46s │%n", canceladas);
             System.out.println("└──────────────────────────────────────────────────────────────┘");
 
             if (total > 0) {
