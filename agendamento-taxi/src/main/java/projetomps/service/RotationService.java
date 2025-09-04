@@ -1,5 +1,6 @@
 package projetomps.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -12,7 +13,7 @@ import projetomps.util.exception.RepositoryException;
 @AllArgsConstructor
 public class RotationService {
     private final RotationRepository rotationRepository;
-    
+
     public List<Rotation> getAllRotations() throws RepositoryException {
         log.info("Buscando todas as rotações");
         return rotationRepository.buscarTodos();
@@ -30,8 +31,8 @@ public class RotationService {
     }
 
     public boolean createRotation(Rotation rotation) throws RepositoryException {
-        log.info("Criando nova rotação para o taxista: {}", 
-                 rotation.getTaxist() != null ? rotation.getTaxist().getName() : "desconhecido");
+        log.info("Criando nova rotação para o taxista: {}",
+                rotation.getTaxist() != null ? rotation.getTaxist().getLogin() : "desconhecido");
 
         validarRotation(rotation);
         return rotationRepository.salvar(rotation) != null;
@@ -42,20 +43,23 @@ public class RotationService {
         return rotationRepository.buscarPorId(id);
     }
 
-    // 🔎 Validação simples de negócio (pode expandir depois)
     private void validarRotation(Rotation rotation) throws RepositoryException {
         if (rotation.getDate() == null) {
             throw new RepositoryException("Data da rotação não pode ser nula");
         }
+
+        if (rotation.getDate().isBefore(LocalDate.now().plusDays(1))) {
+            throw new RepositoryException("Rotação deve ser agendada para uma data futura");
+        }
+
         if (rotation.getStartTime() == null) {
             throw new RepositoryException("Hora do início da rotação não pode ser nula");
         }
-        if (rotation.getEndTime() == null) {
-            throw new RepositoryException("Hora do fim da rotação não pode ser nula");
-        }
+
         if (rotation.getStatus() == null || rotation.getStatus().trim().isEmpty()) {
-            throw new RepositoryException("Status da rotação não pode ser vazio");
+            rotation.setStatus("PENDING"); // Status padrão
         }
+
         if (rotation.getTaxist() == null) {
             throw new RepositoryException("É necessário vincular um taxista à rotação");
         }

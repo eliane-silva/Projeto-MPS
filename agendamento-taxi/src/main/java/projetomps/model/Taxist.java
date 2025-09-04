@@ -11,6 +11,14 @@ public class Taxist extends User{
     private String name;
     private String email;
 
+    public Taxist(String login, String senha) {
+        super(login, senha);
+    }
+
+    public Taxist() {
+        super();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;  
