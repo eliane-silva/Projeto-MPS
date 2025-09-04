@@ -16,7 +16,7 @@ Este projeto é um sistema de agendamento de turnos destinado a taxistas que pre
 
 ## 📚 Diagramas
 
-Link com todas as versões dos diagrams:
+Link com todas as versões dos diagramas:
 https://drive.google.com/file/d/1rlWsZLTiEm6y4cQvllX5Dk3r6GLCnoG_/view?usp=sharing
 
 
