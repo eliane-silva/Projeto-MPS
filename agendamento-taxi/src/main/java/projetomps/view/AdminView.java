@@ -8,6 +8,7 @@ import projetomps.model.Taxist;
 import projetomps.model.User;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
 @AllArgsConstructor
@@ -157,14 +158,12 @@ public class AdminView {
                 return;
             }
 
-            // Criar admin usando UserService
-            Admin novoAdmin = new Admin(login, senha);
-            Admin adminSalvo = controller.getUserController().salvarAdmin(novoAdmin);
+            Optional<Admin> adminSalvo = controller.criarAdmin(login, senha, admin);
 
-            if (adminSalvo != null) {
+            if (adminSalvo.isPresent()) {
                 exibirSucesso("Administrador cadastrado com sucesso!");
-                System.out.println("📋 ID do usuário: " + adminSalvo.getId());
-                System.out.println("👤 Login: " + adminSalvo.getLogin());
+                System.out.println("📋 ID do usuário: " + adminSalvo.get().getId());
+                System.out.println("👤 Login: " + adminSalvo.get().getLogin());
                 System.out.println("🛡️ Tipo: Administrador");
             } else {
                 exibirErro("Erro ao cadastrar administrador. Verifique se o login já não está sendo usado.");
@@ -204,19 +203,15 @@ public class AdminView {
                 return;
             }
 
-            // Criar taxista usando UserService
-            Taxist novoTaxista = new Taxist(login, senha);
-            novoTaxista.setName(nome.isEmpty() ? null : nome);
-            novoTaxista.setEmail(email.isEmpty() ? null : email);
+            Optional<Taxist> taxistaSalvo = controller.criarTaxista(login, senha,
+                    nome.isEmpty() ? null : nome, email.isEmpty() ? null : email, admin);
 
-            Taxist taxistaSalvo = controller.getUserController().salvarTaxist(novoTaxista);
-
-            if (taxistaSalvo != null) {
+            if (taxistaSalvo.isPresent()) {
                 exibirSucesso("Taxista cadastrado com sucesso!");
-                System.out.println("📋 ID do usuário: " + taxistaSalvo.getId());
-                System.out.println("👤 Login: " + taxistaSalvo.getLogin());
-                System.out.println("📛 Nome: " + (taxistaSalvo.getName() != null ? taxistaSalvo.getName() : "Não informado"));
-                System.out.println("📧 Email: " + (taxistaSalvo.getEmail() != null ? taxistaSalvo.getEmail() : "Não informado"));
+                System.out.println("📋 ID do usuário: " + taxistaSalvo.get().getId());
+                System.out.println("👤 Login: " + taxistaSalvo.get().getLogin());
+                System.out.println("📛 Nome: " + (taxistaSalvo.get().getName() != null ? taxistaSalvo.get().getName() : "Não informado"));
+                System.out.println("📧 Email: " + (taxistaSalvo.get().getEmail() != null ? taxistaSalvo.get().getEmail() : "Não informado"));
                 System.out.println("🚖 Tipo: Taxista");
             } else {
                 exibirErro("Erro ao cadastrar taxista. Verifique se o login já não está sendo usado.");
@@ -254,7 +249,7 @@ public class AdminView {
             System.out.println("├─────┼─────────────────┼─────────────────┤");
 
             for (User user : usuarios) {
-                String tipo = controller.getTipoUsuario(user);
+                String tipo = controller.getUserController().getTipoUsuario(user);
                 System.out.printf("│ %-3d │ %-15s │ %-15s │%n",
                         user.getId(), user.getLogin(), tipo);
             }
@@ -271,21 +266,19 @@ public class AdminView {
                 return;
             }
 
-            User usuario = usuarios.stream()
-                    .filter(u -> u.getId() == id)
-                    .findFirst()
-                    .orElse(null);
-
-            if (usuario == null) {
+            Optional<User> usuarioOpt = controller.getUserController().buscarUsuario(id);
+            if (usuarioOpt.isEmpty()) {
                 exibirErro("Usuário não encontrado!");
                 pausar();
                 return;
             }
 
+            User usuario = usuarioOpt.get();
+
             // Mostrar dados atuais
             System.out.println("\nDados atuais:");
             System.out.println("Login: " + usuario.getLogin());
-            System.out.println("Tipo: " + controller.getTipoUsuario(usuario));
+            System.out.println("Tipo: " + controller.getUserController().getTipoUsuario(usuario));
 
             if (usuario instanceof Taxist) {
                 Taxist taxista = (Taxist) usuario;
@@ -324,14 +317,20 @@ public class AdminView {
                 if (!novoEmail.isEmpty()) {
                     taxista.setEmail(novoEmail);
                 }
-            }
 
-            User usuarioAtualizado = controller.getUserController().updateUsuario(usuario);
-
-            if (usuarioAtualizado != null) {
-                exibirSucesso("Usuário atualizado com sucesso!");
-            } else {
-                exibirErro("Erro ao atualizar usuário.");
+                Optional<Taxist> taxistaAtualizado = controller.getUserController().atualizarTaxista(taxista);
+                if (taxistaAtualizado.isPresent()) {
+                    exibirSucesso("Taxista atualizado com sucesso!");
+                } else {
+                    exibirErro("Erro ao atualizar taxista.");
+                }
+            } else if (usuario instanceof Admin) {
+                Optional<Admin> adminAtualizado = controller.getUserController().atualizarAdmin((Admin) usuario);
+                if (adminAtualizado.isPresent()) {
+                    exibirSucesso("Administrador atualizado com sucesso!");
+                } else {
+                    exibirErro("Erro ao atualizar administrador.");
+                }
             }
 
         } catch (NumberFormatException e) {
@@ -367,7 +366,7 @@ public class AdminView {
             System.out.println("├─────┼─────────────────┼─────────────────┤");
 
             for (User user : usuarios) {
-                String tipo = controller.getTipoUsuario(user);
+                String tipo = controller.getUserController().getTipoUsuario(user);
                 System.out.printf("│ %-3d │ %-15s │ %-15s │%n",
                         user.getId(), user.getLogin(), tipo);
             }
@@ -384,16 +383,14 @@ public class AdminView {
                 return;
             }
 
-            User usuario = usuarios.stream()
-                    .filter(u -> u.getId() == id)
-                    .findFirst()
-                    .orElse(null);
-
-            if (usuario == null) {
+            Optional<User> usuarioOpt = controller.getUserController().buscarUsuario(id);
+            if (usuarioOpt.isEmpty()) {
                 exibirErro("Usuário não encontrado!");
                 pausar();
                 return;
             }
+
+            User usuario = usuarioOpt.get();
 
             System.out.println();
             System.out.println("╔══════════════════════════════════════════════════════════════╗");
@@ -402,7 +399,7 @@ public class AdminView {
             System.out.println();
             System.out.println("📋 ID: " + usuario.getId());
             System.out.println("👤 Login: " + usuario.getLogin());
-            System.out.println("🏷️ Tipo: " + controller.getTipoUsuario(usuario));
+            System.out.println("🏷️ Tipo: " + controller.getUserController().getTipoUsuario(usuario));
 
             if (usuario instanceof Admin) {
                 System.out.println("🛡️ Permissões: Administrador do sistema");
@@ -443,7 +440,7 @@ public class AdminView {
                 System.out.println("├─────┼─────────────────┼─────────────────┼──────────────────────┤");
 
                 for (User user : usuarios) {
-                    String tipo = controller.getTipoUsuario(user);
+                    String tipo = controller.getUserController().getTipoUsuario(user);
                     String detalhes = "";
 
                     if (user instanceof Taxist) {
@@ -467,10 +464,10 @@ public class AdminView {
                 System.out.println();
                 System.out.println("Total de usuários: " + usuarios.size());
 
-                // Estatísticas por tipo
-                long totalAdmins = usuarios.stream().filter(u -> u instanceof Admin).count();
-                long totalTaxistas = usuarios.stream().filter(u -> u instanceof Taxist).count();
-                long totalUsuarios = usuarios.stream().filter(u -> !(u instanceof Admin) && !(u instanceof Taxist)).count();
+                // Estatísticas por tipo usando contadores do UserController
+                long totalAdmins = controller.getUserController().contarUsuariosPorTipo(Admin.class);
+                long totalTaxistas = controller.getUserController().contarUsuariosPorTipo(Taxist.class);
+                long totalUsuarios = usuarios.size() - totalAdmins - totalTaxistas;
 
                 System.out.println("📊 Estatísticas:");
                 System.out.println("   • Administradores: " + totalAdmins);
@@ -510,7 +507,7 @@ public class AdminView {
             System.out.println("├─────┼─────────────────┼─────────────────┤");
 
             for (User user : usuarios) {
-                String tipo = controller.getTipoUsuario(user);
+                String tipo = controller.getUserController().getTipoUsuario(user);
                 System.out.printf("│ %-3d │ %-15s │ %-15s │%n",
                         user.getId(), user.getLogin(), tipo);
             }
@@ -562,9 +559,9 @@ public class AdminView {
             List<Rotation> rotacoes = controller.getRotationController().getAllRotations();
 
             long totalUsuarios = usuarios.size();
-            long totalAdmins = usuarios.stream().filter(u -> u instanceof Admin).count();
-            long totalTaxistas = usuarios.stream().filter(u -> u instanceof Taxist).count();
-            long totalUsuariosBase = usuarios.stream().filter(u -> !(u instanceof Admin) && !(u instanceof Taxist)).count();
+            long totalAdmins = controller.getUserController().contarUsuariosPorTipo(Admin.class);
+            long totalTaxistas = controller.getUserController().contarUsuariosPorTipo(Taxist.class);
+            long totalUsuariosBase = totalUsuarios - totalAdmins - totalTaxistas;
 
             long totalRotacoes = rotacoes.size();
             long rotacoesConfirmadas = rotacoes.stream()

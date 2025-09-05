@@ -1,10 +1,14 @@
 package projetomps.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import projetomps.model.Admin;
+import projetomps.model.Taxist;
 import projetomps.model.User;
 import projetomps.service.AuthenticationService;
 import projetomps.util.exception.LoginException;
 import projetomps.util.exception.RepositoryException;
+
+import java.util.Optional;
 
 @Slf4j
 public class FacadeSingletonController {
@@ -38,11 +42,41 @@ public class FacadeSingletonController {
         return authenticationService.getTipoUsuario(usuario);
     }
 
+    public boolean isAuthorizedForAdmim(User user) {
+        return user instanceof Admin;
+    }
+
+    public boolean isAuthorizedForTaxist(User user) {
+        return user instanceof Taxist;
+    }
+
+    public boolean canAccessUserManagement(User user) {
+        return user instanceof Admin;
+    }
+
     public UserController getUserController() {
         return userController;
     }
 
     public RotationController getRotationController() {
         return rotationController;
+    }
+
+    public Optional<Admin> criarAdmin(String login, String senha, User requestingUser) {
+        if (!canAccessUserManagement(requestingUser)) {
+            log.warn("Usuário {} tentou criar admin sem permissão", requestingUser.getLogin());
+            return Optional.empty();
+        }
+
+        return userController.criarAdmin(login, senha);
+    }
+
+    public Optional<Taxist> criarTaxista(String login, String senha, String name, String email, User requestingUser) {
+        if (!canAccessUserManagement(requestingUser)) {
+            log.warn("Usuário {} tentou criar taxista sem permissão", requestingUser != null ? requestingUser.getLogin() : "null");
+            return Optional.empty();
+        }
+
+        return userController.criarTaxista(login, senha, name, email);
     }
 }

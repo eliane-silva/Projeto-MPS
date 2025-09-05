@@ -6,6 +6,7 @@ import projetomps.model.Admin;
 import projetomps.model.Taxist;
 import projetomps.model.User;
 
+import java.util.Optional;
 import java.util.Scanner;
 
 @AllArgsConstructor
@@ -76,7 +77,7 @@ public class MenuPrincipalView {
         LoginView loginView = new LoginView(controller, scanner);
         User usuario = loginView.exibirTelaLogin();
 
-        if (usuario != null && usuario instanceof Admin) {
+        if (usuario != null && controller.isAuthorizedForAdmim(usuario)) {
             AdminView adminView = new AdminView(controller, scanner, (Admin) usuario);
             adminView.exibirMenuPrincipal();
         } else if (usuario != null) {
@@ -136,7 +137,7 @@ public class MenuPrincipalView {
         LoginView loginView = new LoginView(controller, scanner);
         User usuario = loginView.exibirTelaLogin();
 
-        if (usuario != null && usuario instanceof Taxist) {
+        if (usuario != null && controller.isAuthorizedForTaxist(usuario)) {
             TaxistView taxistView = new TaxistView(controller, scanner, (Taxist) usuario);
             taxistView.exibirMenuPrincipal();
         } else if (usuario != null) {
@@ -167,20 +168,35 @@ public class MenuPrincipalView {
             System.out.print("Digite seu email: ");
             String email = lerEntrada();
 
-            // Criar taxista
-            Taxist novoTaxista = new Taxist(login, senha);
-            novoTaxista.setName(nome);
-            novoTaxista.setEmail(email);
+            if (login.isEmpty() || senha.isEmpty()) {
+                exibirErro("Login e senha são obrigatórios!");
+                pausar();
+                return;
+            }
 
-            // Salvar através do controller
-            User usuarioCriado = controller.getUserController().createUser(login, senha);
+            // Criar taxista usando o método correto do FacadeSingletonController
+            // null como requestingUser indica auto-registro público
+            Optional<Taxist> taxistaCriado = controller.criarTaxista(
+                    login,
+                    senha,
+                    nome.isEmpty() ? null : nome,
+                    email.isEmpty() ? null : email,
+                    null // Auto-registro, não há usuário autenticado
+            );
 
-            if (usuarioCriado != null) {
+            if (taxistaCriado.isPresent()) {
                 exibirSucesso("Taxista cadastrado com sucesso!");
+                System.out.println("📋 ID: " + taxistaCriado.get().getId());
+                System.out.println("👤 Login: " + taxistaCriado.get().getLogin());
+                System.out.println("📛 Nome: " + (taxistaCriado.get().getName() != null ?
+                        taxistaCriado.get().getName() : "Não informado"));
+                System.out.println("📧 Email: " + (taxistaCriado.get().getEmail() != null ?
+                        taxistaCriado.get().getEmail() : "Não informado"));
+                System.out.println();
                 System.out.println("Agora você pode fazer login com suas credenciais.");
                 pausar();
             } else {
-                exibirErro("Erro ao cadastrar taxista. Verifique os dados informados.");
+                exibirErro("Erro ao cadastrar taxista. Verifique se o login já não está sendo usado.");
                 pausar();
             }
 
@@ -232,7 +248,6 @@ public class MenuPrincipalView {
     }
 
     private void limparTela() {
-        // Simula limpeza de tela no terminal
         for (int i = 0; i < 50; i++) {
             System.out.println();
         }

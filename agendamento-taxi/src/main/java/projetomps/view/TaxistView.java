@@ -1,26 +1,22 @@
 package projetomps.view;
 
+import lombok.AllArgsConstructor;
 import projetomps.controller.FacadeSingletonController;
 import projetomps.model.Rotation;
 import projetomps.model.Taxist;
-import projetomps.util.exception.RepositoryException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
+@AllArgsConstructor
 public class TaxistView {
     private final FacadeSingletonController controller;
     private final Scanner scanner;
     private final Taxist taxist;
-
-    public TaxistView(FacadeSingletonController controller, Scanner scanner, Taxist taxist) {
-        this.controller = controller;
-        this.scanner = scanner;
-        this.taxist = taxist;
-    }
 
     public void exibirMenuPrincipal() {
         boolean continuar = true;
@@ -30,24 +26,27 @@ public class TaxistView {
 
         while (continuar) {
             try {
-                exibirOpcoes();
+                exibirOpcoesTaxista();
                 int opcao = lerOpcao();
 
                 switch (opcao) {
                     case 1:
-                        agendarRodizio();
+                        criarRotacao();
                         break;
                     case 2:
-                        consultarHorariosDisponiveis();
-                        break;
-                    case 3:
                         listarMinhasRotacoes();
                         break;
+                    case 3:
+                        atualizarRotacao();
+                        break;
                     case 4:
-                        cancelarAgendamento();
+                        cancelarRotacao();
                         break;
                     case 5:
-                        consultarMinhasEstatisticas();
+                        visualizarTodasRotacoes();
+                        break;
+                    case 6:
+                        atualizarDadosPessoais();
                         break;
                     case 0:
                         continuar = false;
@@ -67,192 +66,104 @@ public class TaxistView {
 
     private void exibirCabecalhoTaxista() {
         System.out.println("╔══════════════════════════════════════════════════════════════╗");
-        System.out.println("║                    PAINEL DO TAXISTA                         ║");
+        System.out.println("║                      ÁREA DO TAXISTA                         ║");
         System.out.println("╚══════════════════════════════════════════════════════════════╝");
         System.out.println();
-        System.out.println("👤 Usuário: " + taxist.getLogin() + " (Taxista)");
-        if (taxist.getName() != null && !taxist.getName().isEmpty()) {
-            System.out.println("📝 Nome: " + taxist.getName());
+        System.out.println("👤 Taxista: " + taxist.getName() + " (@" + taxist.getLogin() + ")");
+        if (taxist.getEmail() != null && !taxist.getEmail().isEmpty()) {
+            System.out.println("📧 Email: " + taxist.getEmail());
         }
         System.out.println();
     }
 
-    private void exibirOpcoes() {
+    private void exibirOpcoesTaxista() {
         System.out.println("┌──────────────────────────────────────────────────────────────┐");
-        System.out.println("│                        MENU TAXISTA                          │");
+        System.out.println("│                      MENU TAXISTA                            │");
         System.out.println("├──────────────────────────────────────────────────────────────┤");
-        System.out.println("│  1. Agendar Rodízio                                          │");
-        System.out.println("│  2. Consultar Horários Disponíveis                           │");
-        System.out.println("│  3. Minhas Rotações                                          │");
-        System.out.println("│  4. Cancelar Agendamento                                     │");
-        System.out.println("│  5. Consultar Minhas Estatísticas                            │");
+        System.out.println("│  1. Criar Nova Rotação                                       │");
+        System.out.println("│  2. Minhas Rotações                                          │");
+        System.out.println("│  3. Atualizar Rotação                                        │");
+        System.out.println("│  4. Cancelar Rotação                                         │");
+        System.out.println("│  5. Ver Todas as Rotações do Sistema                         │");
+        System.out.println("│  6. Atualizar Meus Dados                                     │");
         System.out.println("│  0. Logout                                                   │");
         System.out.println("└──────────────────────────────────────────────────────────────┘");
         System.out.print("Escolha uma opção: ");
     }
 
-    private void agendarRodizio() {
+    private void criarRotacao() {
         try {
             limparTela();
             System.out.println("╔══════════════════════════════════════════════════════════════╗");
-            System.out.println("║                     AGENDAR RODÍZIO                          ║");
+            System.out.println("║                     CRIAR NOVA ROTAÇÃO                       ║");
             System.out.println("╚══════════════════════════════════════════════════════════════╝");
             System.out.println();
-            System.out.println("ℹ Instruções:");
-            System.out.println("• A data deve ser futura (não pode ser hoje ou no passado)");
-            System.out.println("• Use o formato AAAA-MM-DD para a data");
-            System.out.println("• Use o formato HH:MM para os horários");
-            System.out.println();
 
-            System.out.print("📅 Digite a data (AAAA-MM-DD): ");
+            System.out.print("Data da rotação (AAAA-MM-DD): ");
             String dataStr = lerEntrada();
-            LocalDate data = LocalDate.parse(dataStr);
 
-            // Validar se a data é futura
-            if (!data.isAfter(LocalDate.now())) {
-                exibirErro("Não é possível agendar para o dia atual ou passado.");
-                pausar();
-                return;
-            }
-
-            // Mostrar horários disponíveis para a data
-            mostrarHorariosDisponiveis(data);
-            System.out.println();
-
-            System.out.print("🕐 Digite o horário de início (HH:MM): ");
+            System.out.print("Horário de início (HH:MM): ");
             String inicioStr = lerEntrada();
-            LocalTime inicio = LocalTime.parse(inicioStr);
 
-            System.out.print("🕐 Digite o horário de fim (HH:MM): ");
+            System.out.print("Horário de fim (HH:MM) - opcional: ");
             String fimStr = lerEntrada();
-            LocalTime fim = LocalTime.parse(fimStr);
 
-            // Verificar se o horário está disponível
-            if (!verificarHorarioDisponivel(data, inicio)) {
-                exibirErro("Horário indisponível. Consulte os horários disponíveis primeiro.");
+            if (dataStr.isEmpty() || inicioStr.isEmpty()) {
+                exibirErro("Data e horário de início são obrigatórios!");
                 pausar();
                 return;
             }
 
-            // Verificar agendamento duplicado
-            if (verificarAgendamentoDuplicado(data, inicio)) {
-                exibirErro("Você já possui um agendamento para este horário.");
-                pausar();
-                return;
+            try {
+                LocalDate data = LocalDate.parse(dataStr);
+                LocalTime horaInicio = LocalTime.parse(inicioStr);
+                LocalTime horaFim = null;
+
+                if (!fimStr.isEmpty()) {
+                    horaFim = LocalTime.parse(fimStr);
+
+                    if (horaFim.isBefore(horaInicio)) {
+                        exibirErro("Horário de fim não pode ser anterior ao horário de início!");
+                        pausar();
+                        return;
+                    }
+                }
+
+                if (data.isBefore(LocalDate.now())) {
+                    exibirErro("Não é possível criar rotação para data passada!");
+                    pausar();
+                    return;
+                }
+
+                Rotation novaRotacao = new Rotation();
+                novaRotacao.setDate(data);
+                novaRotacao.setStartTime(horaInicio);
+                novaRotacao.setEndTime(horaFim);
+                novaRotacao.setStatus("PENDING");
+                novaRotacao.setTaxist(taxist);
+
+                Boolean sucesso = controller.getRotationController().createRotation(novaRotacao);
+
+                if (sucesso) {
+                    exibirSucesso("Rotação criada com sucesso!");
+                    System.out.println("📅 Data: " + data);
+                    System.out.println("🕐 Início: " + horaInicio);
+                    System.out.println("🕐 Fim: " + (horaFim != null ? horaFim : "Não definido"));
+                    System.out.println("📋 Status: PENDING");
+                } else {
+                    exibirErro("Erro ao criar rotação. Verifique os dados informados.");
+                }
+
+            } catch (DateTimeParseException e) {
+                exibirErro("Formato de data/hora inválido! Use AAAA-MM-DD para data e HH:MM para horário.");
             }
 
-            // Criar rotação
-            Rotation novaRotacao = new Rotation();
-            novaRotacao.setTaxist(taxist);
-            novaRotacao.setDate(data);
-            novaRotacao.setStartTime(inicio);
-            novaRotacao.setEndTime(fim);
-            novaRotacao.setStatus("PENDING");
-
-            if (controller.getRotationController().createRotation(novaRotacao)) {
-                exibirSucesso("Rodízio agendado com sucesso!");
-                System.out.println("📋 Detalhes do agendamento:");
-                System.out.println("   • Data: " + data);
-                System.out.println("   • Horário: " + inicio + " às " + fim);
-                System.out.println("   • Status: PENDENTE");
-            } else {
-                exibirErro("Erro ao agendar rodízio.");
-            }
-
-        } catch (DateTimeParseException e) {
-            exibirErro("Formato de data/hora inválido. Use AAAA-MM-DD para data e HH:MM para hora.");
         } catch (Exception e) {
-            exibirErro("Erro ao agendar rodízio: " + e.getMessage());
+            exibirErro("Erro ao criar rotação: " + e.getMessage());
         }
 
         pausar();
         limparTela();
-    }
-
-    private void consultarHorariosDisponiveis() {
-        try {
-            limparTela();
-            System.out.println("╔══════════════════════════════════════════════════════════════╗");
-            System.out.println("║                 CONSULTAR HORÁRIOS DISPONÍVEIS               ║");
-            System.out.println("╚══════════════════════════════════════════════════════════════╝");
-            System.out.println();
-
-            System.out.print("📅 Digite a data para consulta (AAAA-MM-DD): ");
-            String dataStr = lerEntrada();
-            LocalDate data = LocalDate.parse(dataStr);
-
-            // Validar se a data é futura
-            if (!data.isAfter(LocalDate.now())) {
-                exibirErro("Consulte apenas datas futuras.");
-                pausar();
-                return;
-            }
-
-            mostrarHorariosDisponiveis(data);
-
-        } catch (DateTimeParseException e) {
-            exibirErro("Formato de data inválido. Use AAAA-MM-DD.");
-        } catch (Exception e) {
-            exibirErro("Erro ao consultar horários: " + e.getMessage());
-        }
-
-        pausar();
-        limparTela();
-    }
-
-    private void mostrarHorariosDisponiveis(LocalDate data) throws RepositoryException {
-        System.out.println();
-        System.out.println("📅 Horários para " + data + ":");
-        System.out.println();
-
-        // Horários candidatos (8h às 20h, de 2 em 2 horas)
-        List<LocalTime> horariosCandidatos = List.of(
-                LocalTime.of(8, 0), LocalTime.of(10, 0), LocalTime.of(12, 0),
-                LocalTime.of(14, 0), LocalTime.of(16, 0), LocalTime.of(18, 0), LocalTime.of(20, 0)
-        );
-
-        List<Rotation> todasRotacoes = controller.getRotationController().getAllRotations();
-        List<LocalTime> horariosOcupados = todasRotacoes.stream()
-                .filter(r -> data.equals(r.getDate()))
-                .map(Rotation::getStartTime)
-                .filter(t -> t != null)
-                .toList();
-
-        System.out.println("┌─────────────┬─────────────────────┐");
-        System.out.println("│   HORÁRIO   │       STATUS        │");
-        System.out.println("├─────────────┼─────────────────────┤");
-
-        boolean temDisponivel = false;
-        for (LocalTime horario : horariosCandidatos) {
-            String status = horariosOcupados.contains(horario) ? "🔴 OCUPADO" : "🟢 DISPONÍVEL";
-            if (!horariosOcupados.contains(horario)) {
-                temDisponivel = true;
-            }
-            System.out.printf("│    %s    │ %-19s │%n", horario, status);
-        }
-
-        System.out.println("└─────────────┴─────────────────────┘");
-
-        if (!temDisponivel) {
-            System.out.println();
-            System.out.println("ℹ Não há horários disponíveis para esta data.");
-        }
-    }
-
-    private boolean verificarHorarioDisponivel(LocalDate data, LocalTime inicio) throws RepositoryException {
-        List<Rotation> todasRotacoes = controller.getRotationController().getAllRotations();
-        return todasRotacoes.stream()
-                .noneMatch(r -> data.equals(r.getDate()) && inicio.equals(r.getStartTime()));
-    }
-
-    private boolean verificarAgendamentoDuplicado(LocalDate data, LocalTime inicio) throws RepositoryException {
-        List<Rotation> minhasRotacoes = controller.getRotationController().getAllRotations()
-                .stream()
-                .filter(r -> r.getTaxist() != null && r.getTaxist().getId() == taxist.getId())
-                .toList();
-
-        return minhasRotacoes.stream()
-                .anyMatch(r -> data.equals(r.getDate()) && inicio.equals(r.getStartTime()));
     }
 
     private void listarMinhasRotacoes() {
@@ -263,30 +174,45 @@ public class TaxistView {
             System.out.println("╚══════════════════════════════════════════════════════════════╝");
             System.out.println();
 
-            List<Rotation> minhasRotacoes = controller.getRotationController().getAllRotations()
-                    .stream()
+            List<Rotation> todasRotacoes = controller.getRotationController().getAllRotations();
+            List<Rotation> minhasRotacoes = todasRotacoes.stream()
                     .filter(r -> r.getTaxist() != null && r.getTaxist().getId() == taxist.getId())
-                    .toList();
+                    .collect(Collectors.toList());
 
             if (minhasRotacoes.isEmpty()) {
-                System.out.println("ℹ Você não possui rotações agendadas.");
+                System.out.println("ℹ Você ainda não possui rotações cadastradas.");
             } else {
-                System.out.println("┌─────┬────────────┬─────────┬─────────┬─────────────┐");
-                System.out.println("│  #  │    DATA    │ INÍCIO  │   FIM   │   STATUS    │");
-                System.out.println("├─────┼────────────┼─────────┼─────────┼─────────────┤");
+                System.out.println("┌─────┬────────────┬─────────┬─────────┬───────────┐");
+                System.out.println("│ ID  │    DATA    │ INÍCIO  │   FIM   │  STATUS   │");
+                System.out.println("├─────┼────────────┼─────────┼─────────┼───────────┤");
 
-                for (int i = 0; i < minhasRotacoes.size(); i++) {
-                    Rotation r = minhasRotacoes.get(i);
+                for (Rotation r : minhasRotacoes) {
                     String endTime = (r.getEndTime() != null) ? r.getEndTime().toString() : "N/A";
-                    String statusIcon = getStatusIcon(r.getStatus());
 
-                    System.out.printf("│ %-3d │ %-10s │ %-7s │ %-7s │ %-11s │%n",
-                            i, r.getDate(), r.getStartTime(), endTime, statusIcon + r.getStatus());
+                    System.out.printf("│ %-3d │ %-10s │ %-7s │ %-7s │ %-9s │%n",
+                            r.getIdRotation(),
+                            r.getDate(),
+                            r.getStartTime(),
+                            endTime,
+                            r.getStatus());
                 }
 
-                System.out.println("└─────┴────────────┴─────────┴─────────┴─────────────┘");
+                System.out.println("└─────┴────────────┴─────────┴─────────┴───────────┘");
                 System.out.println();
-                System.out.println("Total de rotações: " + minhasRotacoes.size());
+                System.out.println("Total de suas rotações: " + minhasRotacoes.size());
+
+                // Estatísticas das rotações
+                long pendentes = minhasRotacoes.stream()
+                        .filter(r -> "PENDING".equalsIgnoreCase(r.getStatus())).count();
+                long confirmadas = minhasRotacoes.stream()
+                        .filter(r -> "CONFIRMED".equalsIgnoreCase(r.getStatus())).count();
+                long canceladas = minhasRotacoes.stream()
+                        .filter(r -> "CANCELLED".equalsIgnoreCase(r.getStatus())).count();
+
+                System.out.println("📊 Estatísticas:");
+                System.out.println("   • Pendentes: " + pendentes);
+                System.out.println("   • Confirmadas: " + confirmadas);
+                System.out.println("   • Canceladas: " + canceladas);
             }
 
         } catch (Exception e) {
@@ -297,141 +223,373 @@ public class TaxistView {
         limparTela();
     }
 
-    private void cancelarAgendamento() {
+    private void atualizarRotacao() {
         try {
             limparTela();
             System.out.println("╔══════════════════════════════════════════════════════════════╗");
-            System.out.println("║                    CANCELAR AGENDAMENTO                      ║");
+            System.out.println("║                    ATUALIZAR ROTAÇÃO                         ║");
             System.out.println("╚══════════════════════════════════════════════════════════════╝");
             System.out.println();
 
-            List<Rotation> minhasRotacoes = controller.getRotationController().getAllRotations()
-                    .stream()
+            List<Rotation> todasRotacoes = controller.getRotationController().getAllRotations();
+            List<Rotation> minhasRotacoes = todasRotacoes.stream()
                     .filter(r -> r.getTaxist() != null && r.getTaxist().getId() == taxist.getId())
-                    .toList();
+                    .collect(Collectors.toList());
 
             if (minhasRotacoes.isEmpty()) {
-                System.out.println("ℹ Você não possui rotações para cancelar.");
+                System.out.println("ℹ Você não possui rotações para atualizar.");
                 pausar();
                 return;
             }
 
-            System.out.println("Seus agendamentos:");
+            System.out.println("Suas rotações disponíveis:");
             System.out.println();
-            System.out.println("┌─────┬────────────┬─────────┬─────────┬─────────────┐");
-            System.out.println("│  #  │    DATA    │ INÍCIO  │   FIM   │   STATUS    │");
-            System.out.println("├─────┼────────────┼─────────┼─────────┼─────────────┤");
+            System.out.println("┌─────┬────────────┬─────────┬─────────┬───────────┐");
+            System.out.println("│ ID  │    DATA    │ INÍCIO  │   FIM   │  STATUS   │");
+            System.out.println("├─────┼────────────┼─────────┼─────────┼───────────┤");
 
-            for (int i = 0; i < minhasRotacoes.size(); i++) {
-                Rotation r = minhasRotacoes.get(i);
+            for (Rotation r : minhasRotacoes) {
                 String endTime = (r.getEndTime() != null) ? r.getEndTime().toString() : "N/A";
-                String statusIcon = getStatusIcon(r.getStatus());
-
-                System.out.printf("│ %-3d │ %-10s │ %-7s │ %-7s │ %-11s │%n",
-                        i, r.getDate(), r.getStartTime(), endTime, statusIcon + r.getStatus());
+                System.out.printf("│ %-3d │ %-10s │ %-7s │ %-7s │ %-9s │%n",
+                        r.getIdRotation(),
+                        r.getDate(),
+                        r.getStartTime(),
+                        endTime,
+                        r.getStatus());
             }
 
-            System.out.println("└─────┴────────────┴─────────┴─────────┴─────────────┘");
+            System.out.println("└─────┴────────────┴─────────┴─────────┴───────────┘");
             System.out.println();
 
-            System.out.print("Digite o número do agendamento a ser cancelado (0-" + (minhasRotacoes.size() - 1) + ") ou -1 para voltar: ");
-            int index = lerOpcao();
+            System.out.print("Digite o ID da rotação a ser atualizada (0 para cancelar): ");
+            int id = lerOpcao();
 
-            if (index == -1) {
+            if (id == 0) {
                 System.out.println("ℹ Operação cancelada.");
                 pausar();
                 return;
             }
 
-            if (index < 0 || index >= minhasRotacoes.size()) {
-                exibirErro("Número inválido.");
+            Rotation rotacao = minhasRotacoes.stream()
+                    .filter(r -> r.getIdRotation() == id)
+                    .findFirst()
+                    .orElse(null);
+
+            if (rotacao == null) {
+                exibirErro("Rotação não encontrada!");
                 pausar();
                 return;
             }
 
-            Rotation rotacao = minhasRotacoes.get(index);
+            System.out.println("\nDados atuais da rotação:");
+            System.out.println("Data: " + rotacao.getDate());
+            System.out.println("Início: " + rotacao.getStartTime());
+            System.out.println("Fim: " + (rotacao.getEndTime() != null ? rotacao.getEndTime() : "Não definido"));
+            System.out.println("Status: " + rotacao.getStatus());
 
-            // Verificar se pode cancelar (não pode cancelar agendamentos passados)
-            if (rotacao.getDate().isBefore(LocalDate.now()) ||
-                    (rotacao.getDate().equals(LocalDate.now()) && rotacao.getStartTime().isBefore(LocalTime.now()))) {
-                exibirErro("Não é possível cancelar agendamentos passados.");
-                pausar();
-                return;
-            }
+            System.out.println();
+            System.out.print("Nova data (AAAA-MM-DD) - deixe vazio para manter atual: ");
+            String novaDataStr = lerEntrada();
 
-            if (controller.getRotationController().deleteRotation(rotacao)) {
-                exibirSucesso("Agendamento cancelado com sucesso!");
-            } else {
-                exibirErro("Erro ao cancelar agendamento.");
+            System.out.print("Novo horário de início (HH:MM) - deixe vazio para manter atual: ");
+            String novoInicioStr = lerEntrada();
+
+            System.out.print("Novo horário de fim (HH:MM) - deixe vazio para manter atual: ");
+            String novoFimStr = lerEntrada();
+
+            System.out.print("Novo status (PENDING/CONFIRMED/CANCELLED) - deixe vazio para manter atual: ");
+            String novoStatus = lerEntrada();
+
+            try {
+                // Aplicar as mudanças se fornecidas
+                if (!novaDataStr.isEmpty()) {
+                    LocalDate novaData = LocalDate.parse(novaDataStr);
+                    if (novaData.isBefore(LocalDate.now())) {
+                        exibirErro("Não é possível definir data passada!");
+                        pausar();
+                        return;
+                    }
+                    rotacao.setDate(novaData);
+                }
+
+                if (!novoInicioStr.isEmpty()) {
+                    LocalTime novoInicio = LocalTime.parse(novoInicioStr);
+                    rotacao.setStartTime(novoInicio);
+                }
+
+                if (!novoFimStr.isEmpty()) {
+                    if ("null".equalsIgnoreCase(novoFimStr.trim())) {
+                        rotacao.setEndTime(null);
+                    } else {
+                        LocalTime novoFim = LocalTime.parse(novoFimStr);
+                        if (novoFim.isBefore(rotacao.getStartTime())) {
+                            exibirErro("Horário de fim não pode ser anterior ao horário de início!");
+                            pausar();
+                            return;
+                        }
+                        rotacao.setEndTime(novoFim);
+                    }
+                }
+
+                if (!novoStatus.isEmpty()) {
+                    String statusUpper = novoStatus.toUpperCase();
+                    if (statusUpper.equals("PENDING") || statusUpper.equals("CONFIRMED") ||
+                            statusUpper.equals("CANCELLED")) {
+                        rotacao.setStatus(statusUpper);
+                    } else {
+                        exibirErro("Status inválido! Use PENDING, CONFIRMED ou CANCELLED.");
+                        pausar();
+                        return;
+                    }
+                }
+
+                Rotation rotacaoAtualizada = controller.getRotationController().updateRotation(rotacao);
+
+                if (rotacaoAtualizada != null) {
+                    exibirSucesso("Rotação atualizada com sucesso!");
+                } else {
+                    exibirErro("Erro ao atualizar rotação.");
+                }
+
+            } catch (DateTimeParseException e) {
+                exibirErro("Formato de data/hora inválido! Use AAAA-MM-DD para data e HH:MM para horário.");
             }
 
         } catch (NumberFormatException e) {
-            exibirErro("Número inválido.");
+            exibirErro("ID inválido. Digite apenas números.");
         } catch (Exception e) {
-            exibirErro("Erro ao cancelar agendamento: " + e.getMessage());
+            exibirErro("Erro ao atualizar rotação: " + e.getMessage());
         }
 
         pausar();
         limparTela();
     }
 
-    private void consultarMinhasEstatisticas() {
+    private void cancelarRotacao() {
         try {
             limparTela();
             System.out.println("╔══════════════════════════════════════════════════════════════╗");
-            System.out.println("║                    MINHAS ESTATÍSTICAS                       ║");
+            System.out.println("║                    CANCELAR ROTAÇÃO                          ║");
             System.out.println("╚══════════════════════════════════════════════════════════════╝");
             System.out.println();
 
-            List<Rotation> minhasRotacoes = controller.getRotationController().getAllRotations()
-                    .stream()
+            List<Rotation> todasRotacoes = controller.getRotationController().getAllRotations();
+            List<Rotation> minhasRotacoesAtiveis = todasRotacoes.stream()
                     .filter(r -> r.getTaxist() != null && r.getTaxist().getId() == taxist.getId())
-                    .toList();
+                    .filter(r -> !"CANCELLED".equalsIgnoreCase(r.getStatus()))
+                    .collect(Collectors.toList());
 
-            long total = minhasRotacoes.size();
-            long confirmadas = minhasRotacoes.stream().filter(r -> "CONFIRMED".equalsIgnoreCase(r.getStatus())).count();
-            long pendentes = minhasRotacoes.stream().filter(r -> "PENDING".equalsIgnoreCase(r.getStatus())).count();
-            long canceladas = minhasRotacoes.stream().filter(r -> "CANCELLED".equalsIgnoreCase(r.getStatus())).count();
-
-            System.out.println("┌──────────────────────────────────────────────────────────────┐");
-            System.out.println("│                    RESUMO ESTATÍSTICO                       │");
-            System.out.println("├──────────────────────────────────────────────────────────────┤");
-            System.out.printf("│ 📊 Total de rotações: %-34s │%n", total);
-            System.out.printf("│ ✅ Confirmadas: %-41s │%n", confirmadas);
-            System.out.printf("│ ⏳ Pendentes: %-43s │%n", pendentes);
-            System.out.printf("│ ❌ Canceladas: %-42s │%n", canceladas);
-            System.out.println("└──────────────────────────────────────────────────────────────┘");
-
-            if (total > 0) {
-                double percentualConfirmadas = (confirmadas * 100.0) / total;
-                System.out.println();
-                System.out.printf("📈 Taxa de confirmação: %.1f%%\n", percentualConfirmadas);
+            if (minhasRotacoesAtiveis.isEmpty()) {
+                System.out.println("ℹ Você não possui rotações ativas para cancelar.");
+                pausar();
+                return;
             }
 
+            System.out.println("Suas rotações que podem ser canceladas:");
+            System.out.println();
+            System.out.println("┌─────┬────────────┬─────────┬─────────┬───────────┐");
+            System.out.println("│ ID  │    DATA    │ INÍCIO  │   FIM   │  STATUS   │");
+            System.out.println("├─────┼────────────┼─────────┼─────────┼───────────┤");
+
+            for (Rotation r : minhasRotacoesAtiveis) {
+                String endTime = (r.getEndTime() != null) ? r.getEndTime().toString() : "N/A";
+                System.out.printf("│ %-3d │ %-10s │ %-7s │ %-7s │ %-9s │%n",
+                        r.getIdRotation(),
+                        r.getDate(),
+                        r.getStartTime(),
+                        endTime,
+                        r.getStatus());
+            }
+
+            System.out.println("└─────┴────────────┴─────────┴─────────┴───────────┘");
+            System.out.println();
+
+            System.out.print("Digite o ID da rotação a ser cancelada (0 para voltar): ");
+            int id = lerOpcao();
+
+            if (id == 0) {
+                System.out.println("ℹ Operação cancelada.");
+                pausar();
+                return;
+            }
+
+            Rotation rotacao = minhasRotacoesAtiveis.stream()
+                    .filter(r -> r.getIdRotation() == id)
+                    .findFirst()
+                    .orElse(null);
+
+            if (rotacao == null) {
+                exibirErro("Rotação não encontrada!");
+                pausar();
+                return;
+            }
+
+            System.out.println();
+            System.out.println("⚠️  Confirmar cancelamento da rotação:");
+            System.out.println("   Data: " + rotacao.getDate());
+            System.out.println("   Horário: " + rotacao.getStartTime() +
+                    " - " + (rotacao.getEndTime() != null ? rotacao.getEndTime() : "Indefinido"));
+            System.out.println("   Status atual: " + rotacao.getStatus());
+            System.out.println();
+            System.out.print("Confirma o cancelamento? (S/N): ");
+
+            String confirmacao = lerEntrada();
+
+            if ("S".equalsIgnoreCase(confirmacao) || "SIM".equalsIgnoreCase(confirmacao)) {
+                rotacao.setStatus("CANCELLED");
+                Rotation rotacaoAtualizada = controller.getRotationController().updateRotation(rotacao);
+
+                if (rotacaoAtualizada != null) {
+                    exibirSucesso("Rotação cancelada com sucesso!");
+                } else {
+                    exibirErro("Erro ao cancelar rotação.");
+                }
+            } else {
+                System.out.println("ℹ Cancelamento não confirmado.");
+            }
+
+        } catch (NumberFormatException e) {
+            exibirErro("ID inválido. Digite apenas números.");
         } catch (Exception e) {
-            exibirErro("Erro ao consultar estatísticas: " + e.getMessage());
+            exibirErro("Erro ao cancelar rotação: " + e.getMessage());
         }
 
         pausar();
         limparTela();
     }
 
-    private String getStatusIcon(String status) {
-        return switch (status.toUpperCase()) {
-            case "CONFIRMED" -> "✅ ";
-            case "PENDING" -> "⏳ ";
-            case "CANCELLED" -> "❌ ";
-            default -> "❓ ";
-        };
+    private void visualizarTodasRotacoes() {
+        try {
+            limparTela();
+            System.out.println("╔══════════════════════════════════════════════════════════════╗");
+            System.out.println("║                 TODAS AS ROTAÇÕES DO SISTEMA                 ║");
+            System.out.println("╚══════════════════════════════════════════════════════════════╝");
+            System.out.println();
+
+            List<Rotation> rotacoes = controller.getRotationController().getAllRotations();
+
+            if (rotacoes.isEmpty()) {
+                System.out.println("ℹ Nenhuma rotação cadastrada no sistema.");
+            } else {
+                System.out.println("┌─────┬────────────┬─────────┬─────────┬───────────┬─────────────────┐");
+                System.out.println("│ ID  │    DATA    │ INÍCIO  │   FIM   │  STATUS   │     TAXISTA     │");
+                System.out.println("├─────┼────────────┼─────────┼─────────┼───────────┼─────────────────┤");
+
+                for (Rotation r : rotacoes) {
+                    String taxistaInfo = "N/A";
+                    if (r.getTaxist() != null) {
+                        if (r.getTaxist().getId() == taxist.getId()) {
+                            taxistaInfo = ">>> VOCÊ <<<";
+                        } else {
+                            taxistaInfo = r.getTaxist().getName();
+                        }
+                    }
+
+                    String endTime = (r.getEndTime() != null) ? r.getEndTime().toString() : "N/A";
+
+                    System.out.printf("│ %-3d │ %-10s │ %-7s │ %-7s │ %-9s │ %-15s │%n",
+                            r.getIdRotation(),
+                            r.getDate(),
+                            r.getStartTime(),
+                            endTime,
+                            r.getStatus(),
+                            taxistaInfo);
+                }
+
+                System.out.println("└─────┴────────────┴─────────┴─────────┴───────────┴─────────────────┘");
+                System.out.println();
+                System.out.println("Total de rotações no sistema: " + rotacoes.size());
+
+                // Suas rotações vs outras
+                long minhasRotacoes = rotacoes.stream()
+                        .filter(r -> r.getTaxist() != null && r.getTaxist().getId() == taxist.getId())
+                        .count();
+                long outrasRotacoes = rotacoes.size() - minhasRotacoes;
+
+                System.out.println("📊 Resumo:");
+                System.out.println("   • Suas rotações: " + minhasRotacoes);
+                System.out.println("   • Rotações de outros taxistas: " + outrasRotacoes);
+            }
+
+        } catch (Exception e) {
+            exibirErro("Erro ao visualizar rotações: " + e.getMessage());
+        }
+
+        pausar();
+        limparTela();
+    }
+
+    private void atualizarDadosPessoais() {
+        try {
+            limparTela();
+            System.out.println("╔══════════════════════════════════════════════════════════════╗");
+            System.out.println("║                   ATUALIZAR MEUS DADOS                       ║");
+            System.out.println("╚══════════════════════════════════════════════════════════════╝");
+            System.out.println();
+
+            System.out.println("Dados atuais:");
+            System.out.println("Login: " + taxist.getLogin());
+            System.out.println("Nome: " + (taxist.getName() != null ? taxist.getName() : "Não informado"));
+            System.out.println("Email: " + (taxist.getEmail() != null ? taxist.getEmail() : "Não informado"));
+            System.out.println();
+
+            System.out.print("Novo nome (deixe vazio para manter atual): ");
+            String novoNome = lerEntrada();
+
+            System.out.print("Novo email (deixe vazio para manter atual): ");
+            String novoEmail = lerEntrada();
+
+            System.out.print("Nova senha (deixe vazio para manter atual): ");
+            String novaSenha = lerEntrada();
+
+            // Aplicar mudanças
+            boolean alterado = false;
+
+            if (!novoNome.isEmpty()) {
+                taxist.setName(novoNome);
+                alterado = true;
+            }
+
+            if (!novoEmail.isEmpty()) {
+                taxist.setEmail(novoEmail);
+                alterado = true;
+            }
+
+            if (!novaSenha.isEmpty()) {
+                taxist.setSenha(novaSenha);
+                alterado = true;
+            }
+
+            if (!alterado) {
+                System.out.println("ℹ Nenhuma alteração foi feita.");
+            } else {
+                var taxistaAtualizado = controller.getUserController().atualizarTaxista(taxist);
+                if (taxistaAtualizado.isPresent()) {
+                    exibirSucesso("Dados atualizados com sucesso!");
+                    // Atualizar referência local
+                    taxist.setName(taxistaAtualizado.get().getName());
+                    taxist.setEmail(taxistaAtualizado.get().getEmail());
+                    taxist.setSenha(taxistaAtualizado.get().getSenha());
+                } else {
+                    exibirErro("Erro ao atualizar dados. Verifique as informações fornecidas.");
+                }
+            }
+
+        } catch (Exception e) {
+            exibirErro("Erro ao atualizar dados: " + e.getMessage());
+        }
+
+        pausar();
+        limparTela();
     }
 
     private void exibirMensagemLogout() {
         limparTela();
         System.out.println("╔══════════════════════════════════════════════════════════════╗");
         System.out.println("║                                                              ║");
-        System.out.println("║                     LOGOUT REALIZADO                         ║");
+        System.out.println("║                    LOGOUT REALIZADO                         ║");
         System.out.println("║                                                              ║");
-        System.out.println("║               Obrigado por usar o sistema!                   ║");
+        System.out.println("║            Obrigado por usar o sistema, Taxista!            ║");
         System.out.println("║                                                              ║");
         System.out.println("╚══════════════════════════════════════════════════════════════╝");
         System.out.println();
@@ -470,7 +628,6 @@ public class TaxistView {
     }
 
     private void limparTela() {
-        // Simula limpeza de tela no terminal
         for (int i = 0; i < 50; i++) {
             System.out.println();
         }

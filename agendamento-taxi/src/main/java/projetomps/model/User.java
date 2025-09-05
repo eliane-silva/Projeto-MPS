@@ -1,41 +1,47 @@
 package projetomps.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+
+import java.util.Objects;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public abstract class User {
     private int id;
     private String login;
     private String senha;
-    
+
     public User(String login, String senha) {
-        this.login = login;
-        this.senha = senha;
+        this.login = login != null ? login.trim() : null;
+        this.senha = senha != null ? senha.trim() : null;
     }
-    
-    // Métodos de negócio
+
     public boolean isValidUser() {
-        return login != null && !login.trim().isEmpty() && 
-               senha != null && !senha.trim().isEmpty();
+        return login != null && !login.trim().isEmpty() &&
+                senha != null && !senha.trim().isEmpty();
     }
-    
+
     public void setLogin(String login) {
-        if (login != null) {
-            this.login = login.trim();
-        } else {
-            this.login = login;
-        }
+        this.login = login != null ? login.trim() : null;
     }
-    
+
     public void setSenha(String senha) {
-        if (senha != null) {
-            this.senha = senha.trim();
-        } else {
-            this.senha = senha;
-        }
+        this.senha = senha != null ? senha.trim() : null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User)) return false;
+        User user = (User) o;
+        return id == user.id && Objects.equals(login, user.login);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, login);
     }
 }

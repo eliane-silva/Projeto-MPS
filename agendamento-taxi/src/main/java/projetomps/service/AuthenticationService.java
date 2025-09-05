@@ -1,13 +1,13 @@
 package projetomps.service;
 
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import projetomps.model.Admin;
 import projetomps.model.Taxist;
 import projetomps.model.User;
 import projetomps.repository.UserRepository;
 import projetomps.util.exception.LoginException;
 import projetomps.util.exception.RepositoryException;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @AllArgsConstructor
@@ -15,7 +15,7 @@ public class AuthenticationService {
     private final UserRepository userRepository;
 
     public User autenticarUsuario(String login, String senha) throws LoginException, RepositoryException {
-        log.info("Tentativa de autenticação para usuário: {}", login);
+        log.info("Tentativa de login para usuário: {}", login);
 
         if (login == null || login.trim().isEmpty()) {
             throw new LoginException("Login não pode ser vazio");
@@ -27,11 +27,17 @@ public class AuthenticationService {
 
         User usuario = userRepository.buscarPorLogin(login.trim());
 
-        if (usuario == null || !usuario.getSenha().equals(senha.trim())) {
-            throw new LoginException("Credenciais inválidas");
+        if (usuario == null) {
+            log.warn("Usuário não encontrado: {}", login);
+            throw new LoginException("Usuário ou senha inválidos");
         }
 
-        log.info("Usuário autenticado com sucesso: {}", login);
+        if (!usuario.getSenha().equals(senha.trim())) {
+            log.warn("Senha incorreta para usuário: {}", login);
+            throw new LoginException("Usuário ou senha inválidos");
+        }
+
+        log.info("Login realizado com sucesso para: {}", login);
         return usuario;
     }
 
@@ -39,8 +45,9 @@ public class AuthenticationService {
         if (usuario instanceof Admin) {
             return "ADMIN";
         } else if (usuario instanceof Taxist) {
-            return "TAXISTA";
+            return "TAXIST";
+        } else {
+            return "USER";
         }
-        return "UNKNOWN";
     }
 }

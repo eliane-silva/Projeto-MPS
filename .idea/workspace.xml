@@ -5,28 +5,27 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4e8ed775-97cb-4ac5-a6a0-4a9863306f65" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/agendamento-taxi/src/main/java/projetomps/controller/FacadeSingletonController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/agendamento-taxi/src/main/java/projetomps/model/Admin.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/agendamento-taxi/src/main/java/projetomps/repository/MemoryRotationRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/agendamento-taxi/src/main/java/projetomps/service/AuthenticationService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/agendamento-taxi/src/main/java/projetomps/view/AdminView.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/agendamento-taxi/src/main/java/projetomps/view/LoginView.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/agendamento-taxi/src/main/java/projetomps/view/MenuPrincipalView.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/agendamento-taxi/src/main/java/projetomps/view/TaxistView.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dbnavigator.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dbnavigator.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/agendamento-taxi/src/main/java/projetomps/Application.java" beforeDir="false" afterPath="$PROJECT_DIR$/agendamento-taxi/src/main/java/projetomps/Application.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/agendamento-taxi/src/main/java/projetomps/controller/FacadeSingletonController.java" beforeDir="false" afterPath="$PROJECT_DIR$/agendamento-taxi/src/main/java/projetomps/controller/FacadeSingletonController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/agendamento-taxi/src/main/java/projetomps/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/agendamento-taxi/src/main/java/projetomps/controller/UserController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/agendamento-taxi/src/main/java/projetomps/model/Admin.java" beforeDir="false" afterPath="$PROJECT_DIR$/agendamento-taxi/src/main/java/projetomps/model/Admin.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/agendamento-taxi/src/main/java/projetomps/model/Taxist.java" beforeDir="false" afterPath="$PROJECT_DIR$/agendamento-taxi/src/main/java/projetomps/model/Taxist.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/agendamento-taxi/src/main/java/projetomps/model/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/agendamento-taxi/src/main/java/projetomps/model/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/agendamento-taxi/src/main/java/projetomps/service/AuthenticationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/agendamento-taxi/src/main/java/projetomps/service/AuthenticationService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/agendamento-taxi/src/main/java/projetomps/service/RotationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/agendamento-taxi/src/main/java/projetomps/service/RotationService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/agendamento-taxi/src/main/java/projetomps/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/agendamento-taxi/src/main/java/projetomps/service/UserService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/agendamento-taxi/src/main/java/projetomps/test/java/projetomps/AppTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/agendamento-taxi/src/main/java/projetomps/test/java/projetomps/AppTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/agendamento-taxi/src/main/java/projetomps/view/AdminView.java" beforeDir="false" afterPath="$PROJECT_DIR$/agendamento-taxi/src/main/java/projetomps/view/AdminView.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/agendamento-taxi/src/main/java/projetomps/view/MenuPrincipalView.java" beforeDir="false" afterPath="$PROJECT_DIR$/agendamento-taxi/src/main/java/projetomps/view/MenuPrincipalView.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/agendamento-taxi/src/main/java/projetomps/view/TaxistView.java" beforeDir="false" afterPath="$PROJECT_DIR$/agendamento-taxi/src/main/java/projetomps/view/TaxistView.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/agendamento-taxi/src/main/java/projetomps/view/UserView.java" beforeDir="false" afterPath="$PROJECT_DIR$/agendamento-taxi/src/main/java/projetomps/view/UserView.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/agendamento-taxi/target/classes/projetomps/Application.class" beforeDir="false" afterPath="$PROJECT_DIR$/agendamento-taxi/target/classes/projetomps/Application.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/agendamento-taxi/target/classes/projetomps/controller/RotationController.class" beforeDir="false" afterPath="$PROJECT_DIR$/agendamento-taxi/target/classes/projetomps/controller/RotationController.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/agendamento-taxi/target/classes/projetomps/controller/UserController.class" beforeDir="false" afterPath="$PROJECT_DIR$/agendamento-taxi/target/classes/projetomps/controller/UserController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/agendamento-taxi/target/classes/projetomps/model/Rotation.class" beforeDir="false" afterPath="$PROJECT_DIR$/agendamento-taxi/target/classes/projetomps/model/Rotation.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/agendamento-taxi/target/classes/projetomps/model/Taxist.class" beforeDir="false" afterPath="$PROJECT_DIR$/agendamento-taxi/target/classes/projetomps/model/Taxist.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/agendamento-taxi/target/classes/projetomps/service/RotationService.class" beforeDir="false" afterPath="$PROJECT_DIR$/agendamento-taxi/target/classes/projetomps/service/RotationService.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/agendamento-taxi/target/classes/projetomps/service/UserService.class" beforeDir="false" afterPath="$PROJECT_DIR$/agendamento-taxi/target/classes/projetomps/service/UserService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/agendamento-taxi/target/classes/projetomps/view/RotationView.class" beforeDir="false" afterPath="$PROJECT_DIR$/agendamento-taxi/target/classes/projetomps/view/RotationView.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/agendamento-taxi/target/classes/projetomps/view/UserView.class" beforeDir="false" afterPath="$PROJECT_DIR$/agendamento-taxi/target/classes/projetomps/view/UserView.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -55,15 +54,15 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.Application.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "TASK#MPS-4",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/klay-/Projeto-MPS"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.Application.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;TASK#MPS-4&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/klay-/Projeto-MPS&quot;
   }
-}]]></component>
+}</component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">

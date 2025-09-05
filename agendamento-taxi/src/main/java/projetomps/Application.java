@@ -71,19 +71,11 @@ public class Application {
         try {
 
             // Admin padrão
-            Admin admin = new Admin("admin", "admin123");
-            userService.salvarAdmin(admin);
+            userService.criarAdmin("admin", "admin123");
 
             // Taxistas de exemplo
-            Taxist taxist1 = new Taxist("joao", "senha123");
-            taxist1.setName("João Silva");
-            taxist1.setEmail("joao@email.com");
-            userService.salvarTaxist(taxist1);
-
-            Taxist taxist2 = new Taxist("maria", "senha456");
-            taxist2.setName("Maria Santos");
-            taxist2.setEmail("maria@email.com");
-            userService.salvarTaxist(taxist2);
+            userService.criarTaxista("joao", "senha123", "João Silva", "joao@email.com");
+            userService.criarTaxista("maria", "senha456", "Maria Santos", "maria@email.com");
 
             System.out.println("Dados iniciais criados com sucesso!");
 
