@@ -1,9 +1,9 @@
-package projetomps.service;
+package projetomps.business_logic.service;
 
-import projetomps.model.Admin;
-import projetomps.model.Taxist;
-import projetomps.model.User;
-import projetomps.repository.UserRepository;
+import projetomps.app_logic.dao.UserDAO;
+import projetomps.business_logic.model.Admin;
+import projetomps.business_logic.model.Taxist;
+import projetomps.business_logic.model.User;
 import projetomps.util.exception.LoginException;
 import projetomps.util.exception.RepositoryException;
 import projetomps.util.exception.SenhaException;
@@ -16,16 +16,16 @@ import java.util.Optional;
 @Slf4j
 @AllArgsConstructor
 public class UserService {
-    private final UserRepository userRepository;
+    private final UserDAO userDAO;
 
     public List<User> getAllUsuarios() throws RepositoryException {
         log.info("Buscando todos os usuários");
-        return userRepository.buscarTodos();
+        return userDAO.buscarTodos();
     }
 
     public Optional<User> buscarPorId(int id) throws RepositoryException {
         log.info("Buscando usuário por ID: {}", id);
-        User user = userRepository.buscarPorId(id);
+        User user = userDAO.buscarPorId(id);
         return Optional.ofNullable(user);
     }
 
@@ -34,13 +34,13 @@ public class UserService {
         if (login == null || login.trim().isEmpty()) {
             return Optional.empty();
         }
-        User user = userRepository.buscarPorLogin(login.trim());
+        User user = userDAO.buscarPorLogin(login.trim());
         return Optional.ofNullable(user);
     }
 
     public boolean deleteUsuario(int id) throws RepositoryException {
         log.info("Deletando usuário com ID: {}", id);
-        return userRepository.excluir(id);
+        return userDAO.excluir(id);
     }
 
     public Admin criarAdmin(String login, String senha) throws RepositoryException {
@@ -49,7 +49,7 @@ public class UserService {
         validarCredenciais(login, senha);
 
         Admin admin = new Admin(login, senha);
-        return (Admin) userRepository.salvar(admin);
+        return (Admin) userDAO.salvar(admin);
     }
 
     public Admin atualizarAdmin(Admin admin) throws RepositoryException {
@@ -59,7 +59,7 @@ public class UserService {
         verificarExistenciaUsuario(admin.getId(), Admin.class);
 
 
-        return (Admin) userRepository.atualizar(admin);
+        return (Admin) userDAO.atualizar(admin);
     }
 
     public List<Admin> buscarTodosAdmins() throws RepositoryException {
@@ -81,7 +81,7 @@ public class UserService {
 
         validarDadosEspecificosTaxista(taxist);
 
-        return (Taxist) userRepository.salvar(taxist);
+        return (Taxist) userDAO.salvar(taxist);
     }
 
     public Taxist atualizarTaxista(Taxist taxist) throws RepositoryException {
@@ -91,7 +91,7 @@ public class UserService {
         verificarExistenciaUsuario(taxist.getId(), Taxist.class);
         validarDadosEspecificosTaxista(taxist);
 
-        return (Taxist) userRepository.atualizar(taxist);
+        return (Taxist) userDAO.atualizar(taxist);
     }
 
     public List<Taxist> buscarTodosTaxistas() throws RepositoryException {

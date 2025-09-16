@@ -1,4 +1,4 @@
-package projetomps.model;
+package projetomps.business_logic.model;
 
 import java.util.Objects;
 import lombok.Getter;

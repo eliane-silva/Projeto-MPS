@@ -1,9 +1,9 @@
-package projetomps.controller;
+package projetomps.business_logic.controller;
 
-import projetomps.model.Admin;
-import projetomps.model.Taxist;
-import projetomps.model.User;
-import projetomps.service.UserService;
+import projetomps.business_logic.model.Admin;
+import projetomps.business_logic.model.Taxist;
+import projetomps.business_logic.model.User;
+import projetomps.business_logic.service.UserService;
 import projetomps.util.exception.RepositoryException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

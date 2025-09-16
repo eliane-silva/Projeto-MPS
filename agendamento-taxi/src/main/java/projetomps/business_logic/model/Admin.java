@@ -1,4 +1,4 @@
-package projetomps.model;
+package projetomps.business_logic.model;
 
 import lombok.Getter;
 import lombok.Setter;

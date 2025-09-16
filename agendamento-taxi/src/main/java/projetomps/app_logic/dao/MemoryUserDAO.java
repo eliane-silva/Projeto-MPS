@@ -1,15 +1,15 @@
-package projetomps.repository;
-
-import projetomps.model.User;
-import projetomps.util.exception.RepositoryException;
-import lombok.extern.slf4j.Slf4j;
+package projetomps.app_logic.dao;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import lombok.extern.slf4j.Slf4j;
+import projetomps.business_logic.model.User;
+import projetomps.util.exception.RepositoryException;
+
 @Slf4j
-public class MemoryRepository implements UserRepository {
+public class MemoryUserDAO implements UserDAO {
     private final List<User> users = new ArrayList<>();
     private final AtomicInteger idGenerator = new AtomicInteger(1);
     

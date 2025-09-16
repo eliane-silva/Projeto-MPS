@@ -1,17 +1,14 @@
 package projetomps;
 
-import projetomps.controller.FacadeSingletonController;
-import projetomps.controller.RotationController;
-import projetomps.controller.UserController;
-import projetomps.model.Admin;
-import projetomps.model.Taxist;
-import projetomps.repository.MemoryRepository;
-import projetomps.repository.MemoryRotationRepository;
-import projetomps.repository.RotationRepository;
-import projetomps.repository.UserRepository;
-import projetomps.service.AuthenticationService;
-import projetomps.service.RotationService;
-import projetomps.service.UserService;
+import projetomps.app_logic.dao.DAOFactory;
+import projetomps.app_logic.dao.RotationDAO;
+import projetomps.app_logic.dao.UserDAO;
+import projetomps.business_logic.controller.FacadeSingletonController;
+import projetomps.business_logic.controller.RotationController;
+import projetomps.business_logic.controller.UserController;
+import projetomps.business_logic.service.AuthenticationService;
+import projetomps.business_logic.service.RotationService;
+import projetomps.business_logic.service.UserService;
 import projetomps.view.MenuPrincipalView;
 
 import java.util.Scanner;
@@ -22,12 +19,14 @@ public class Application {
 
         try {
             // Injeção de dependências manual
-            UserRepository userRepository = new MemoryRepository();
-            RotationRepository rotationRepository = new MemoryRotationRepository();
+            DAOFactory memoryFactory = DAOFactory.getDAOFactory(DAOFactory.MEMORY);
 
-            UserService userService = new UserService(userRepository);
-            RotationService rotationService = new RotationService(rotationRepository);
-            AuthenticationService authenticationService = new AuthenticationService(userRepository);
+            UserDAO userDAO = memoryFactory.getUserDAO();
+            RotationDAO rotationDAO = memoryFactory.getRotationDAO();
+
+            UserService userService = new UserService(userDAO);
+            RotationService rotationService = new RotationService(rotationDAO);
+            AuthenticationService authenticationService = new AuthenticationService(userDAO);
 
             UserController userController = new UserController(userService);
             RotationController rotationController = new RotationController(rotationService);

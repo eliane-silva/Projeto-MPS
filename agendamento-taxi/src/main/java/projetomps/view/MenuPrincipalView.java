@@ -1,10 +1,10 @@
 package projetomps.view;
 
 import lombok.AllArgsConstructor;
-import projetomps.controller.FacadeSingletonController;
-import projetomps.model.Admin;
-import projetomps.model.Taxist;
-import projetomps.model.User;
+import projetomps.business_logic.controller.FacadeSingletonController;
+import projetomps.business_logic.model.Admin;
+import projetomps.business_logic.model.Taxist;
+import projetomps.business_logic.model.User;
 
 import java.util.Optional;
 import java.util.Scanner;

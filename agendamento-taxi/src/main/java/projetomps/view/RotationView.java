@@ -2,9 +2,9 @@ package projetomps.view;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import projetomps.controller.RotationController;
-import projetomps.model.Rotation;
-import projetomps.model.Taxist;
+import projetomps.business_logic.controller.RotationController;
+import projetomps.business_logic.model.Rotation;
+import projetomps.business_logic.model.Taxist;
 import projetomps.util.exception.RepositoryException;
 
 import java.time.LocalDate;

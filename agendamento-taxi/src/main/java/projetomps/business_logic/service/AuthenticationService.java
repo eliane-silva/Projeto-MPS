@@ -1,18 +1,18 @@
-package projetomps.service;
+package projetomps.business_logic.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import projetomps.model.Admin;
-import projetomps.model.Taxist;
-import projetomps.model.User;
-import projetomps.repository.UserRepository;
+import projetomps.app_logic.dao.UserDAO;
+import projetomps.business_logic.model.Admin;
+import projetomps.business_logic.model.Taxist;
+import projetomps.business_logic.model.User;
 import projetomps.util.exception.LoginException;
 import projetomps.util.exception.RepositoryException;
 
 @Slf4j
 @AllArgsConstructor
 public class AuthenticationService {
-    private final UserRepository userRepository;
+    private final UserDAO userDAO;
 
     public User autenticarUsuario(String login, String senha) throws LoginException, RepositoryException {
         log.info("Tentativa de login para usuário: {}", login);
@@ -25,7 +25,7 @@ public class AuthenticationService {
             throw new LoginException("Senha não pode ser vazia");
         }
 
-        User usuario = userRepository.buscarPorLogin(login.trim());
+        User usuario = userDAO.buscarPorLogin(login.trim());
 
         if (usuario == null) {
             log.warn("Usuário não encontrado: {}", login);

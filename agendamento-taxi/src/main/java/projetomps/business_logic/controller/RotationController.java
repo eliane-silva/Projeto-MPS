@@ -1,10 +1,10 @@
-package projetomps.controller;
+package projetomps.business_logic.controller;
 
 import java.util.List;
 
 import lombok.AllArgsConstructor;
-import projetomps.model.Rotation;
-import projetomps.service.RotationService;
+import projetomps.business_logic.model.Rotation;
+import projetomps.business_logic.service.RotationService;
 import projetomps.util.exception.RepositoryException;
 
 @AllArgsConstructor

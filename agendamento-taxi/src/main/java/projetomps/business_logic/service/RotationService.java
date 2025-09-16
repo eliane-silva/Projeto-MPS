@@ -1,9 +1,9 @@
-package projetomps.service;
+package projetomps.business_logic.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import projetomps.model.Rotation;
-import projetomps.repository.RotationRepository;
+import projetomps.app_logic.dao.RotationDAO;
+import projetomps.business_logic.model.Rotation;
 import projetomps.util.exception.RepositoryException;
 
 import java.util.List;
@@ -11,11 +11,11 @@ import java.util.List;
 @Slf4j
 @AllArgsConstructor
 public class RotationService {
-    private final RotationRepository rotationRepository;
+    private final RotationDAO rotationDAO;
 
     public List<Rotation> getAllRotations() throws RepositoryException {
         log.info("Buscando todas as rotações");
-        return rotationRepository.buscarTodos();
+        return rotationDAO.buscarTodos();
     }
 
     public Boolean createRotation(Rotation rotation) throws RepositoryException {
@@ -50,7 +50,7 @@ public class RotationService {
         }
 
         try {
-            Rotation rotacaoSalva = rotationRepository.salvar(rotation);
+            Rotation rotacaoSalva = rotationDAO.salvar(rotation);
             return rotacaoSalva != null;
         } catch (RepositoryException e) {
             log.error("Erro ao criar rotação: {}", e.getMessage());
@@ -70,7 +70,7 @@ public class RotationService {
         }
 
         // Verificar se a rotação existe
-        Rotation rotacaoExistente = rotationRepository.buscarPorId(rotation.getIdRotation());
+        Rotation rotacaoExistente = rotationDAO.buscarPorId(rotation.getIdRotation());
         if (rotacaoExistente == null) {
             throw new RepositoryException("Rotação não encontrada");
         }
@@ -106,7 +106,7 @@ public class RotationService {
         }
 
         try {
-            return rotationRepository.atualizar(rotation);
+            return rotationDAO.atualizar(rotation);
         } catch (RepositoryException e) {
             log.error("Erro ao atualizar rotação: {}", e.getMessage());
             throw e;
@@ -125,13 +125,13 @@ public class RotationService {
         }
 
         // Verificar se a rotação existe
-        Rotation rotacaoExistente = rotationRepository.buscarPorId(rotation.getIdRotation());
+        Rotation rotacaoExistente = rotationDAO.buscarPorId(rotation.getIdRotation());
         if (rotacaoExistente == null) {
             throw new RepositoryException("Rotação não encontrada");
         }
 
         try {
-            return rotationRepository.excluir(rotation.getIdRotation());
+            return rotationDAO.excluir(rotation.getIdRotation());
         } catch (RepositoryException e) {
             log.error("Erro ao deletar rotação: {}", e.getMessage());
             throw e;
@@ -145,7 +145,7 @@ public class RotationService {
             throw new RepositoryException("ID da rotação deve ser um número positivo");
         }
 
-        return rotationRepository.buscarPorId(id);
+        return rotationDAO.buscarPorId(id);
     }
 
     public List<Rotation> buscarPorTaxista(int taxistId) throws RepositoryException {

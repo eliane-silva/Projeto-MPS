@@ -1,9 +1,9 @@
 package projetomps.view;
 
 import lombok.AllArgsConstructor;
-import projetomps.controller.FacadeSingletonController;
-import projetomps.model.Rotation;
-import projetomps.model.Taxist;
+import projetomps.business_logic.controller.FacadeSingletonController;
+import projetomps.business_logic.model.Rotation;
+import projetomps.business_logic.model.Taxist;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

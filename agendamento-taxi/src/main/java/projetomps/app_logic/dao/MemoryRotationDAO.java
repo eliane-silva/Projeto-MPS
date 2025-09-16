@@ -1,15 +1,15 @@
-package projetomps.repository;
-
-import projetomps.model.Rotation;
-import projetomps.util.exception.RepositoryException;
-import lombok.extern.slf4j.Slf4j;
+package projetomps.app_logic.dao;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import lombok.extern.slf4j.Slf4j;
+import projetomps.business_logic.model.Rotation;
+import projetomps.util.exception.RepositoryException;
+
 @Slf4j
-public class MemoryRotationRepository implements RotationRepository {
+public class MemoryRotationDAO implements RotationDAO {
     private final List<Rotation> rotations = new ArrayList<>();
     private final AtomicInteger idGenerator = new AtomicInteger(1);
 
