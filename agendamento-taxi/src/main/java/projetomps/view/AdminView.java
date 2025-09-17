@@ -7,6 +7,7 @@ import projetomps.business_logic.model.Rotation;
 import projetomps.business_logic.model.Taxist;
 import projetomps.business_logic.model.User;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
@@ -47,6 +48,9 @@ public class AdminView {
                     case 6:
                         removerRotacao();
                         break;
+                    case 7:
+                        mostrarRelatorio();
+                        break;
                     case 0:
                         continuar = false;
                         exibirMensagemLogout();
@@ -82,6 +86,7 @@ public class AdminView {
         System.out.println("│  4. Consultar Estatísticas Gerais                            │");
         System.out.println("│  5. Listar Todas as Rotações                                 │");
         System.out.println("│  6. Remover Rotação                                          │");
+        System.out.println("│  7. Gerar Relatório                                          │");
         System.out.println("│  0. Logout                                                   │");
         System.out.println("└──────────────────────────────────────────────────────────────┘");
         System.out.print("Escolha uma opção: ");
@@ -210,8 +215,10 @@ public class AdminView {
                 exibirSucesso("Taxista cadastrado com sucesso!");
                 System.out.println("📋 ID do usuário: " + taxistaSalvo.get().getId());
                 System.out.println("👤 Login: " + taxistaSalvo.get().getLogin());
-                System.out.println("📛 Nome: " + (taxistaSalvo.get().getName() != null ? taxistaSalvo.get().getName() : "Não informado"));
-                System.out.println("📧 Email: " + (taxistaSalvo.get().getEmail() != null ? taxistaSalvo.get().getEmail() : "Não informado"));
+                System.out.println("📛 Nome: "
+                        + (taxistaSalvo.get().getName() != null ? taxistaSalvo.get().getName() : "Não informado"));
+                System.out.println("📧 Email: "
+                        + (taxistaSalvo.get().getEmail() != null ? taxistaSalvo.get().getEmail() : "Não informado"));
                 System.out.println("🚖 Tipo: Taxista");
             } else {
                 exibirErro("Erro ao cadastrar taxista. Verifique se o login já não está sendo usado.");
@@ -704,6 +711,25 @@ public class AdminView {
 
         pausar();
         limparTela();
+    }
+
+    private void mostrarRelatorio() {
+        try {
+            limparTela();
+            String relatorio = controller.gerarRelatorio(LocalDate.MIN, LocalDate.MAX).getConteudo();
+            System.out.println("╔══════════════════════════════════════════════════════════════╗");
+            System.out.println("║                         RELATÓRIO                            ║");
+            System.out.println("╚══════════════════════════════════════════════════════════════╝");
+            System.out.println();
+
+            System.out.println(relatorio);
+
+            pausar();
+
+            limparTela();
+        } catch (Exception e) {
+            System.out.println("Erro mostrando relatorio");
+        }
     }
 
     private void exibirMensagemLogout() {

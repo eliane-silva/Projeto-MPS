@@ -4,9 +4,11 @@ import projetomps.app_logic.dao.DAOFactory;
 import projetomps.app_logic.dao.RotationDAO;
 import projetomps.app_logic.dao.UserDAO;
 import projetomps.business_logic.controller.FacadeSingletonController;
+import projetomps.business_logic.controller.RelatorioController;
 import projetomps.business_logic.controller.RotationController;
 import projetomps.business_logic.controller.UserController;
 import projetomps.business_logic.service.AuthenticationService;
+import projetomps.business_logic.service.RelatorioService;
 import projetomps.business_logic.service.RotationService;
 import projetomps.business_logic.service.UserService;
 import projetomps.view.MenuPrincipalView;
@@ -27,12 +29,14 @@ public class Application {
             UserService userService = new UserService(userDAO);
             RotationService rotationService = new RotationService(rotationDAO);
             AuthenticationService authenticationService = new AuthenticationService(userDAO);
+            RelatorioService relatorioService = new RelatorioService(rotationDAO);
 
             UserController userController = new UserController(userService);
             RotationController rotationController = new RotationController(rotationService);
+            RelatorioController relatorioController = new RelatorioController(relatorioService);
 
             FacadeSingletonController facadeController = FacadeSingletonController.getInstance(
-                    userController, rotationController, authenticationService);
+                    userController, rotationController, authenticationService, relatorioController);
 
             Scanner scanner = new Scanner(System.in);
 
