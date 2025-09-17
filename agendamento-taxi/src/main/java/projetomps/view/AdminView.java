@@ -572,21 +572,21 @@ public class AdminView {
                     .filter(r -> "CANCELLED".equalsIgnoreCase(r.getStatus())).count();
 
             System.out.println("┌──────────────────────────────────────────────────────────────┐");
-            System.out.println("│                         USUÁRIOS                            │");
+            System.out.println("│                         USUÁRIOS                             │");
             System.out.println("├──────────────────────────────────────────────────────────────┤");
-            System.out.printf("│ Total de usuários: %-37s │%n", totalUsuarios);
-            System.out.printf("│ Administradores: %-39s │%n", totalAdmins);
-            System.out.printf("│ Taxistas: %-46s │%n", totalTaxistas);
-            System.out.printf("│ Usuários base: %-42s │%n", totalUsuariosBase);
+            System.out.printf("│ Total de usuários: %-41s │%n", totalUsuarios);
+            System.out.printf("│ Administradores: %-43s │%n", totalAdmins);
+            System.out.printf("│ Taxistas: %-50s │%n", totalTaxistas);
+            System.out.printf("│ Usuários base: %-45s │%n", totalUsuariosBase);
             System.out.println("└──────────────────────────────────────────────────────────────┘");
 
             System.out.println("┌──────────────────────────────────────────────────────────────┐");
             System.out.println("│                        ROTAÇÕES                              │");
             System.out.println("├──────────────────────────────────────────────────────────────┤");
-            System.out.printf("│ Total de rotações: %-37s │%n", totalRotacoes);
-            System.out.printf("│ Confirmadas: %-42s │%n", rotacoesConfirmadas);
-            System.out.printf("│ Pendentes: %-44s │%n", rotacoesPendentes);
-            System.out.printf("│ Canceladas: %-43s │%n", rotacoesCanceladas);
+            System.out.printf("│ Total de rotações: %-41s │%n", totalRotacoes);
+            System.out.printf("│ Confirmadas: %-47s │%n", rotacoesConfirmadas);
+            System.out.printf("│ Pendentes: %-49s │%n", rotacoesPendentes);
+            System.out.printf("│ Canceladas: %-48s │%n", rotacoesCanceladas);
             System.out.println("└──────────────────────────────────────────────────────────────┘");
 
         } catch (Exception e) {
