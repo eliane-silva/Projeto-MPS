@@ -91,7 +91,7 @@ public class FacadeSingletonController {
                      requestingUser != null ? requestingUser.getLogin() : "null");
             return Optional.empty();
         }
-        log.info("Criando Taxist: {}", login);
+        log.info("Criando Taxista: {}", login);
         return userController.criarTaxista(login, senha, name, email);
     }
 }

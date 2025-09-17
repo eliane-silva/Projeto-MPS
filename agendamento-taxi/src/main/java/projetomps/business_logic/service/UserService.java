@@ -128,7 +128,7 @@ public class UserService {
             throw new LoginException("Login deve ter no máximo 20 caracteres");
         }
         if (!loginLimpo.matches("^[a-zA-Z0-9_]+$")) {
-            throw new LoginException("Login deve conter apenas letras, números e underscore");
+            throw new LoginException("Login deve conter apenas letras, números e underline");
         }
     }
 

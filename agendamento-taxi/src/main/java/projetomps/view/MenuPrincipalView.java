@@ -48,7 +48,7 @@ public class MenuPrincipalView {
 
     private void exibirBoasVindas() {
         System.out.println("╔══════════════════════════════════════════════════════════════╗");
-        System.out.println("║                     SISTEMA AGENDATAXI                       ║");
+        System.out.println("║                     SISTEMA AGENDATÁXI                       ║");
         System.out.println("║                                                              ║");
         System.out.println("║           Sistema de Gerenciamento de Rodízio de Táxis       ║");
         System.out.println("║                                                              ║");
