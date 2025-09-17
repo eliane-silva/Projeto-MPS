@@ -129,8 +129,10 @@ public class TaxistView {
                     }
                 }
 
-                if (data.isBefore(LocalDate.now())) {
-                    exibirErro("Não é possível criar rotação para data passada!");
+                LocalDate dataMinima = LocalDate.now().plusDays(1);
+                if (data.isBefore(dataMinima)) {
+                    exibirErro("Não é possível criar rotação para hoje ou datas passadas! "
+                            + "Data mínima permitida: " + dataMinima);
                     pausar();
                     return;
                 }
