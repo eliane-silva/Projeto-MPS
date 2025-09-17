@@ -710,9 +710,9 @@ public class AdminView {
         limparTela();
         System.out.println("╔══════════════════════════════════════════════════════════════╗");
         System.out.println("║                                                              ║");
-        System.out.println("║                    LOGOUT REALIZADO                         ║");
+        System.out.println("║                    LOGOUT REALIZADO                          ║");
         System.out.println("║                                                              ║");
-        System.out.println("║            Obrigado por usar o sistema, Admin!              ║");
+        System.out.println("║            Obrigado por usar o sistema, Admin!               ║");
         System.out.println("║                                                              ║");
         System.out.println("╚══════════════════════════════════════════════════════════════╝");
         System.out.println();
