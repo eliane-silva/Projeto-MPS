@@ -1,26 +1,29 @@
 package projetomps.business_logic.controller;
 
+import java.util.List;
+import java.util.Optional;
+
+import lombok.AllArgsConstructor;
+import projetomps.app_logic.log.AppLogger;
+import projetomps.app_logic.log.AppLoggerFactory;
 import projetomps.business_logic.model.Admin;
 import projetomps.business_logic.model.Taxist;
 import projetomps.business_logic.model.User;
 import projetomps.business_logic.service.UserService;
 import projetomps.util.exception.RepositoryException;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-import java.util.List;
-import java.util.Optional;
-
-@Slf4j
 @AllArgsConstructor
 public class UserController {
+    private static final AppLogger log =
+            AppLoggerFactory.getLogger(UserController.class);
+
     private final UserService userService;
 
     public List<User> getAllUsuarios() {
         try {
             return userService.getAllUsuarios();
         } catch (RepositoryException e) {
-            log.error("Erro ao buscar usuários: {}", e.getMessage());
+            log.error("Erro ao buscar usuários", e);
             throw new RuntimeException("Erro interno do sistema", e);
         }
     }
@@ -29,7 +32,7 @@ public class UserController {
         try {
             return userService.buscarPorId(id);
         } catch (RepositoryException e) {
-            log.error("Erro ao buscar usuário: {}", e.getMessage());
+            log.error("Erro ao buscar usuário: {}", e, id);
             return Optional.empty();
         }
     }
@@ -38,16 +41,18 @@ public class UserController {
         try {
             return userService.buscarPorLogin(login);
         } catch (RepositoryException e) {
-            log.error("Erro ao buscar usuário por login: {}", e.getMessage());
+            log.error("Erro ao buscar usuário por login: {}", e, login);
             return Optional.empty();
         }
     }
 
     public boolean deleteUsuario(int id) {
         try {
-            return userService.deleteUsuario(id);
+            boolean ok = userService.deleteUsuario(id);
+            if (ok) log.info("Usuário deletado: {}", id);
+            return ok;
         } catch (RepositoryException e) {
-            log.error("Erro ao deletar usuário: {}", e.getMessage());
+            log.error("Erro ao deletar usuário: {}", e, id);
             return false;
         }
     }
@@ -55,9 +60,10 @@ public class UserController {
     public Optional<Admin> criarAdmin(String login, String senha) {
         try {
             Admin admin = userService.criarAdmin(login, senha);
+            log.info("Admin criado: {}", login);
             return Optional.of(admin);
         } catch (RepositoryException e) {
-            log.error("Erro ao criar admin: {}", e.getMessage());
+            log.error("Erro ao criar admin: {}", e, login);
             return Optional.empty();
         }
     }
@@ -65,9 +71,10 @@ public class UserController {
     public Optional<Admin> atualizarAdmin(Admin admin) {
         try {
             Admin adminAtualizado = userService.atualizarAdmin(admin);
+            log.info("Admin atualizado: {}", admin.getLogin());
             return Optional.of(adminAtualizado);
         } catch (RepositoryException e) {
-            log.error("Erro ao atualizar admin: {}", e.getMessage());
+            log.error("Erro ao atualizar admin: {}", e, admin != null ? admin.getLogin() : "null");
             return Optional.empty();
         }
     }
@@ -76,7 +83,7 @@ public class UserController {
         try {
             return userService.buscarTodosAdmins();
         } catch (RepositoryException e) {
-            log.error("Erro ao buscar admins: {}", e.getMessage());
+            log.error("Erro ao buscar admins", e);
             return List.of();
         }
     }
@@ -84,9 +91,10 @@ public class UserController {
     public Optional<Taxist> criarTaxista(String login, String senha, String name, String email) {
         try {
             Taxist taxist = userService.criarTaxista(login, senha, name, email);
+            log.info("Taxista criado: {}", login);
             return Optional.of(taxist);
         } catch (RepositoryException e) {
-            log.error("Erro ao criar taxista: {}", e.getMessage());
+            log.error("Erro ao criar taxista: {}", e, login);
             return Optional.empty();
         }
     }
@@ -94,9 +102,10 @@ public class UserController {
     public Optional<Taxist> atualizarTaxista(Taxist taxist) {
         try {
             Taxist taxistAtualizado = userService.atualizarTaxista(taxist);
+            log.info("Taxista atualizado: {}", taxist.getLogin());
             return Optional.of(taxistAtualizado);
         } catch (RepositoryException e) {
-            log.error("Erro ao atualizar taxista: {}", e.getMessage());
+            log.error("Erro ao atualizar taxista: {}", e, taxist != null ? taxist.getLogin() : "null");
             return Optional.empty();
         }
     }
@@ -105,7 +114,7 @@ public class UserController {
         try {
             return userService.buscarTodosTaxistas();
         } catch (RepositoryException e) {
-            log.error("Erro ao buscar taxistas: {}", e.getMessage());
+            log.error("Erro ao buscar taxistas", e);
             return List.of();
         }
     }
@@ -118,7 +127,7 @@ public class UserController {
         try {
             return userService.contarUsuariosPorTipo(tipo);
         } catch (RepositoryException e) {
-            log.error("Erro ao contar usuários por tipo: {}", e.getMessage());
+            log.error("Erro ao contar usuários por tipo: {}", e, tipo != null ? tipo.getSimpleName() : "null");
             return 0;
         }
     }

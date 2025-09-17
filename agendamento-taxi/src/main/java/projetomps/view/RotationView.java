@@ -1,21 +1,24 @@
 package projetomps.view;
 
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import projetomps.business_logic.controller.RotationController;
-import projetomps.business_logic.model.Rotation;
-import projetomps.business_logic.model.Taxist;
-import projetomps.util.exception.RepositoryException;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-@Slf4j
+import lombok.AllArgsConstructor;
+import projetomps.app_logic.log.AppLogger;
+import projetomps.app_logic.log.AppLoggerFactory;
+import projetomps.business_logic.controller.RotationController;
+import projetomps.business_logic.model.Rotation;
+import projetomps.business_logic.model.Taxist;
+import projetomps.util.exception.RepositoryException;
+
 @AllArgsConstructor
 public class RotationView {
+
+    private static final AppLogger log =
+            AppLoggerFactory.getLogger(RotationView.class);
 
     private final RotationController rotationController;
     private final Scanner scanner;
@@ -42,13 +45,13 @@ public class RotationView {
             sendSchedule(taxistId, date, start, end);
         } catch (Exception e) {
             showError("Error while filling the form: " + e.getMessage());
+            log.error("Form error", e);
         }
     }
 
     public void showAvailableTimes(LocalDate date) throws RepositoryException {
         log.info("=== Available times for {} ===", date);
 
-        // Example time windows (start-only slots). If you prefer, compare ranges with start/end.
         List<LocalTime> candidateStarts = List.of(
                 LocalTime.of(8, 0),
                 LocalTime.of(10, 0),
@@ -89,6 +92,7 @@ public class RotationView {
         Boolean created = rotationController.createRotation(rotation);
         if (Boolean.TRUE.equals(created)) {
             showMessage("Rotation scheduled successfully!");
+            log.info("Rotation scheduled for taxist {} at {} {}", taxistId, date, start);
         } else {
             showError("Failed to schedule rotation.");
         }
@@ -109,6 +113,7 @@ public class RotationView {
         Rotation updated = rotationController.updateRotation(r);
         if (updated != null) {
             showMessage("Rotation confirmed successfully!");
+            log.info("Rotation {} confirmed", updated.getIdRotation());
         } else {
             showError("Error confirming rotation.");
         }
@@ -122,11 +127,12 @@ public class RotationView {
         }
 
         Rotation r = list.get(listIndex);
-        r.setStatus("CANCELLED"); // optional: mark before deletion for visibility
+        r.setStatus("CANCELLED"); // opcional: marca antes de excluir
 
         Boolean deleted = rotationController.deleteRotation(r);
         if (Boolean.TRUE.equals(deleted)) {
             showMessage("Rotation cancelled successfully!");
+            log.info("Rotation {} cancelled", r.getIdRotation());
         } else {
             showError("Error cancelling rotation.");
         }

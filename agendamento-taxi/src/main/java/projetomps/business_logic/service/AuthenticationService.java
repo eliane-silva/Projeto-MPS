@@ -1,7 +1,8 @@
 package projetomps.business_logic.service;
 
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import projetomps.app_logic.log.AppLogger;
+import projetomps.app_logic.log.AppLoggerFactory;
 import projetomps.app_logic.dao.UserDAO;
 import projetomps.business_logic.model.Admin;
 import projetomps.business_logic.model.Taxist;
@@ -9,9 +10,11 @@ import projetomps.business_logic.model.User;
 import projetomps.util.exception.LoginException;
 import projetomps.util.exception.RepositoryException;
 
-@Slf4j
 @AllArgsConstructor
 public class AuthenticationService {
+    private static final AppLogger log =
+            AppLoggerFactory.getLogger(AuthenticationService.class);
+
     private final UserDAO userDAO;
 
     public User autenticarUsuario(String login, String senha) throws LoginException, RepositoryException {
