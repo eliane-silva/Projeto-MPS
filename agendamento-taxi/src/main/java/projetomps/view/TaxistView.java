@@ -1,9 +1,9 @@
 package projetomps.view;
 
 import lombok.AllArgsConstructor;
-import projetomps.controller.FacadeSingletonController;
-import projetomps.model.Rotation;
-import projetomps.model.Taxist;
+import projetomps.business_logic.controller.FacadeSingletonController;
+import projetomps.business_logic.model.Rotation;
+import projetomps.business_logic.model.Taxist;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -129,8 +129,10 @@ public class TaxistView {
                     }
                 }
 
-                if (data.isBefore(LocalDate.now())) {
-                    exibirErro("Não é possível criar rotação para data passada!");
+                LocalDate dataMinima = LocalDate.now().plusDays(1);
+                if (data.isBefore(dataMinima)) {
+                    exibirErro("Não é possível criar rotação para hoje ou datas passadas! "
+                            + "Data mínima permitida: " + dataMinima);
                     pausar();
                     return;
                 }

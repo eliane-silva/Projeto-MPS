@@ -1,12 +1,14 @@
 package projetomps.view;
 
 import lombok.AllArgsConstructor;
-import projetomps.controller.FacadeSingletonController;
-import projetomps.model.Admin;
-import projetomps.model.Rotation;
-import projetomps.model.Taxist;
-import projetomps.model.User;
+import projetomps.business_logic.controller.FacadeSingletonController;
+import projetomps.business_logic.model.Admin;
+import projetomps.business_logic.model.Relatorio;
+import projetomps.business_logic.model.Rotation;
+import projetomps.business_logic.model.Taxist;
+import projetomps.business_logic.model.User;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
@@ -47,6 +49,9 @@ public class AdminView {
                     case 6:
                         removerRotacao();
                         break;
+                    case 7:
+                        mostrarRelatorio();
+                        break;
                     case 0:
                         continuar = false;
                         exibirMensagemLogout();
@@ -82,6 +87,7 @@ public class AdminView {
         System.out.println("│  4. Consultar Estatísticas Gerais                            │");
         System.out.println("│  5. Listar Todas as Rotações                                 │");
         System.out.println("│  6. Remover Rotação                                          │");
+        System.out.println("│  7. Gerar Relatório                                          │");
         System.out.println("│  0. Logout                                                   │");
         System.out.println("└──────────────────────────────────────────────────────────────┘");
         System.out.print("Escolha uma opção: ");
@@ -210,8 +216,10 @@ public class AdminView {
                 exibirSucesso("Taxista cadastrado com sucesso!");
                 System.out.println("📋 ID do usuário: " + taxistaSalvo.get().getId());
                 System.out.println("👤 Login: " + taxistaSalvo.get().getLogin());
-                System.out.println("📛 Nome: " + (taxistaSalvo.get().getName() != null ? taxistaSalvo.get().getName() : "Não informado"));
-                System.out.println("📧 Email: " + (taxistaSalvo.get().getEmail() != null ? taxistaSalvo.get().getEmail() : "Não informado"));
+                System.out.println("📛 Nome: "
+                        + (taxistaSalvo.get().getName() != null ? taxistaSalvo.get().getName() : "Não informado"));
+                System.out.println("📧 Email: "
+                        + (taxistaSalvo.get().getEmail() != null ? taxistaSalvo.get().getEmail() : "Não informado"));
                 System.out.println("🚖 Tipo: Taxista");
             } else {
                 exibirErro("Erro ao cadastrar taxista. Verifique se o login já não está sendo usado.");
@@ -572,21 +580,21 @@ public class AdminView {
                     .filter(r -> "CANCELLED".equalsIgnoreCase(r.getStatus())).count();
 
             System.out.println("┌──────────────────────────────────────────────────────────────┐");
-            System.out.println("│                         USUÁRIOS                            │");
+            System.out.println("│                         USUÁRIOS                             │");
             System.out.println("├──────────────────────────────────────────────────────────────┤");
-            System.out.printf("│ Total de usuários: %-37s │%n", totalUsuarios);
-            System.out.printf("│ Administradores: %-39s │%n", totalAdmins);
-            System.out.printf("│ Taxistas: %-46s │%n", totalTaxistas);
-            System.out.printf("│ Usuários base: %-42s │%n", totalUsuariosBase);
+            System.out.printf("│ Total de usuários: %-41s │%n", totalUsuarios);
+            System.out.printf("│ Administradores: %-43s │%n", totalAdmins);
+            System.out.printf("│ Taxistas: %-50s │%n", totalTaxistas);
+            System.out.printf("│ Usuários base: %-45s │%n", totalUsuariosBase);
             System.out.println("└──────────────────────────────────────────────────────────────┘");
 
             System.out.println("┌──────────────────────────────────────────────────────────────┐");
             System.out.println("│                        ROTAÇÕES                              │");
             System.out.println("├──────────────────────────────────────────────────────────────┤");
-            System.out.printf("│ Total de rotações: %-37s │%n", totalRotacoes);
-            System.out.printf("│ Confirmadas: %-42s │%n", rotacoesConfirmadas);
-            System.out.printf("│ Pendentes: %-44s │%n", rotacoesPendentes);
-            System.out.printf("│ Canceladas: %-43s │%n", rotacoesCanceladas);
+            System.out.printf(" │ Total de rotações: %-41s │%n", totalRotacoes);
+            System.out.printf(" │ Confirmadas: %-47s │%n", rotacoesConfirmadas);
+            System.out.printf(" │ Pendentes: %-49s │%n", rotacoesPendentes);
+            System.out.printf(" │ Canceladas: %-48s │%n", rotacoesCanceladas);
             System.out.println("└──────────────────────────────────────────────────────────────┘");
 
         } catch (Exception e) {
@@ -706,13 +714,281 @@ public class AdminView {
         limparTela();
     }
 
+    // Substitua apenas o método mostrarRelatorio() na classe AdminView existente
+
+    private void mostrarRelatorio() {
+        boolean continuarRelatorios = true;
+
+        while (continuarRelatorios) {
+            try {
+                limparTela();
+                System.out.println("╔══════════════════════════════════════════════════════════════╗");
+                System.out.println("║                    SISTEMA DE RELATÓRIOS                     ║");
+                System.out.println("╚══════════════════════════════════════════════════════════════╝");
+                System.out.println();
+                System.out.println("┌──────────────────────────────────────────────────────────────┐");
+                System.out.println("│                    TIPOS DE RELATÓRIOS                       │");
+                System.out.println("├──────────────────────────────────────────────────────────────┤");
+                System.out.println("│  1. Relatório Geral (Todas as rotações)                     │");
+                System.out.println("│  2. Relatório Semanal (Semana específica)                   │");
+                System.out.println("│  3. Relatório Mensal (Mês específico)                       │");
+                System.out.println("│  0. Voltar ao Menu Principal                                │");
+                System.out.println("└──────────────────────────────────────────────────────────────┘");
+                System.out.print("Escolha o tipo de relatório: ");
+
+                int tipoRelatorio = lerOpcao();
+
+                switch (tipoRelatorio) {
+                    case 1:
+                        processarRelatorioGeral();
+                        break;
+                    case 2:
+                        processarRelatorioSemanal();
+                        break;
+                    case 3:
+                        processarRelatorioMensal();
+                        break;
+                    case 0:
+                        continuarRelatorios = false;
+                        break;
+                    default:
+                        exibirErro("Opção inválida! Tente novamente.");
+                        pausar();
+                }
+            } catch (NumberFormatException e) {
+                exibirErro("Por favor, digite um número válido.");
+                pausar();
+            } catch (Exception e) {
+                exibirErro("Erro inesperado: " + e.getMessage());
+                pausar();
+            }
+        }
+
+        limparTela();
+    }
+
+    private void processarRelatorioGeral() {
+        try {
+            limparTela();
+            System.out.println("╔══════════════════════════════════════════════════════════════╗");
+            System.out.println("║                      RELATÓRIO GERAL                         ║");
+            System.out.println("╚══════════════════════════════════════════════════════════════╝");
+            System.out.println();
+            System.out.println("⏳ Gerando relatório geral...");
+
+            var relatorio = controller.getRelatorioController().gerarRelatorioGeral();
+
+            exibirRelatorio(relatorio);
+            oferecerOpcaoExportacao(relatorio);
+
+        } catch (Exception e) {
+            exibirErro("Erro ao gerar relatório geral: " + e.getMessage());
+            pausar();
+        }
+    }
+
+    private void processarRelatorioSemanal() {
+        try {
+            limparTela();
+            System.out.println("╔══════════════════════════════════════════════════════════════╗");
+            System.out.println("║                     RELATÓRIO SEMANAL                        ║");
+            System.out.println("╚══════════════════════════════════════════════════════════════╝");
+            System.out.println();
+            System.out.println("Digite uma data para calcular a semana (formato: dd/mm/aaaa)");
+            System.out.println("(A semana será calculada de segunda a domingo)");
+            System.out.println();
+
+            System.out.print("Dia: ");
+            int dia = lerOpcao();
+
+            System.out.print("Mês: ");
+            int mes = lerOpcao();
+
+            System.out.print("Ano: ");
+            int ano = lerOpcao();
+
+            if (dia < 1 || dia > 31 || mes < 1 || mes > 12 || ano < 2020 || ano > 2030) {
+                exibirErro("Data inválida! Use valores válidos (dia: 1-31, mês: 1-12, ano: 2020-2030)");
+                pausar();
+                return;
+            }
+
+            LocalDate dataReferencia = LocalDate.of(ano, mes, dia);
+
+            System.out.println();
+            System.out.println("⏳ Gerando relatório semanal para " + dataReferencia.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")) + "...");
+
+            var relatorio = controller.getRelatorioController().gerarRelatorioSemanal(dataReferencia);
+
+            exibirRelatorio(relatorio);
+            oferecerOpcaoExportacao(relatorio);
+
+        } catch (NumberFormatException e) {
+            exibirErro("Data inválida! Digite apenas números.");
+            pausar();
+        } catch (java.time.DateTimeException e) {
+            exibirErro("Data inválida! Verifique se a data está correta.");
+            pausar();
+        } catch (Exception e) {
+            exibirErro("Erro ao gerar relatório semanal: " + e.getMessage());
+            pausar();
+        }
+    }
+
+    private void processarRelatorioMensal() {
+        try {
+            limparTela();
+            System.out.println("╔══════════════════════════════════════════════════════════════╗");
+            System.out.println("║                     RELATÓRIO MENSAL                         ║");
+            System.out.println("╚══════════════════════════════════════════════════════════════╝");
+            System.out.println();
+
+            System.out.print("Mês (1-12): ");
+            int mes = lerOpcao();
+
+            System.out.print("Ano: ");
+            int ano = lerOpcao();
+
+            if (mes < 1 || mes > 12 || ano < 2020 || ano > 2030) {
+                exibirErro("Data inválida! Use valores válidos (mês: 1-12, ano: 2020-2030)");
+                pausar();
+                return;
+            }
+
+            System.out.println();
+            System.out.println("⏳ Gerando relatório mensal para " + String.format("%02d/%d", mes, ano) + "...");
+
+            var relatorio = controller.getRelatorioController().gerarRelatorioMensal(mes, ano);
+
+            exibirRelatorio(relatorio);
+            oferecerOpcaoExportacao(relatorio);
+
+        } catch (NumberFormatException e) {
+            exibirErro("Valores inválidos! Digite apenas números.");
+            pausar();
+        } catch (Exception e) {
+            exibirErro("Erro ao gerar relatório mensal: " + e.getMessage());
+            pausar();
+        }
+    }
+
+    private void exibirRelatorio(projetomps.business_logic.model.Relatorio relatorio) {
+        limparTela();
+        System.out.println("╔══════════════════════════════════════════════════════════════╗");
+        System.out.println("║ " + String.format("%-30s", relatorio.getTitulo() != null ? relatorio.getTitulo().toUpperCase() : "RELATÓRIO") + " ║");
+        System.out.println("╚══════════════════════════════════════════════════════════════╝");
+        System.out.println();
+
+        if (relatorio.getTipo() != null) {
+            System.out.println("📊 Tipo: " + relatorio.getTipo());
+        }
+        System.out.println("📅 Gerado em: " + relatorio.getDate().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        System.out.println();
+
+        System.out.println("┌──────────────────────────────────────────────────────────────┐");
+        System.out.println("│                        CONTEÚDO                              │");
+        System.out.println("└──────────────────────────────────────────────────────────────┘");
+        System.out.println();
+
+        // Melhorar a formatação do conteúdo
+        String[] linhas = relatorio.getConteudo().split("\n");
+        for (String linha : linhas) {
+            if (linha.trim().startsWith("===")) {
+                System.out.println();
+                System.out.println("🔹 " + linha.replace("===", "").trim());
+                System.out.println("─".repeat(60));
+            } else if (linha.trim().contains(":") && !linha.trim().isEmpty()) {
+                String[] partes = linha.split(":", 2);
+                if (partes.length == 2) {
+                    System.out.printf("  %-40s: %s%n", partes[0].trim(), partes[1].trim());
+                } else {
+                    System.out.println("  " + linha);
+                }
+            } else if (!linha.trim().isEmpty()) {
+                System.out.println("  " + linha);
+            }
+        }
+
+        System.out.println();
+    }
+
+    private void oferecerOpcaoExportacao(projetomps.business_logic.model.Relatorio relatorio) {
+        System.out.println("┌──────────────────────────────────────────────────────────────┐");
+        System.out.println("│                    OPÇÕES DE EXPORTAÇÃO                      │");
+        System.out.println("├──────────────────────────────────────────────────────────────┤");
+        System.out.println("│  1. Exportar como HTML                                      │");
+        System.out.println("│  2. Exportar como PDF                                       │");
+        System.out.println("│  3. Exportar ambos (HTML e PDF)                             │");
+        System.out.println("│  0. Não exportar (apenas visualizar)                        │");
+        System.out.println("└──────────────────────────────────────────────────────────────┘");
+        System.out.print("Escolha uma opção: ");
+
+        try {
+            int escolha = lerOpcao();
+
+            switch (escolha) {
+                case 1:
+                    exportarRelatorio(relatorio, "HTML");
+                    break;
+                case 2:
+                    exportarRelatorio(relatorio, "PDF");
+                    break;
+                case 3:
+                    exportarRelatorio(relatorio, "HTML");
+                    exportarRelatorio(relatorio, "PDF");
+                    break;
+                case 0:
+                    System.out.println("ℹ Relatório visualizado apenas. Nenhuma exportação realizada.");
+                    break;
+                default:
+                    exibirErro("Opção inválida!");
+            }
+        } catch (NumberFormatException e) {
+            exibirErro("Opção inválida! Digite apenas números.");
+        }
+
+        pausar();
+    }
+
+    private void exportarRelatorio(projetomps.business_logic.model.Relatorio relatorio, String formato) {
+        try {
+            String extensao = formato.toLowerCase();
+            String nomeArquivoDefault = String.format("relatorio_%s_%s.%s",
+                    relatorio.getTipo() != null ? relatorio.getTipo().toLowerCase() : "geral",
+                    relatorio.getDate().format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd")),
+                    extensao);
+
+            System.out.println();
+            System.out.print("Digite o caminho/nome do arquivo (ou ENTER para usar '" + nomeArquivoDefault + "'): ");
+            String caminho = lerEntrada();
+
+            if (caminho.isEmpty()) {
+                caminho = nomeArquivoDefault;
+            } else if (!caminho.toLowerCase().endsWith("." + extensao)) {
+                caminho += "." + extensao;
+            }
+
+            System.out.println("⏳ Exportando relatório em " + formato + "...");
+
+            controller.getRelatorioController().exportarRelatorio(relatorio, formato.toUpperCase(), caminho);
+
+            exibirSucesso("Relatório exportado com sucesso!");
+            System.out.println("📁 Arquivo salvo em: " + caminho);
+            System.out.println("📊 Formato: " + formato.toUpperCase());
+            System.out.println("📄 Tipo: " + (relatorio.getTipo() != null ? relatorio.getTipo() : "GERAL"));
+
+        } catch (Exception e) {
+            exibirErro("Erro ao exportar relatório: " + e.getMessage());
+        }
+    }
+
     private void exibirMensagemLogout() {
         limparTela();
         System.out.println("╔══════════════════════════════════════════════════════════════╗");
         System.out.println("║                                                              ║");
-        System.out.println("║                    LOGOUT REALIZADO                         ║");
+        System.out.println("║                    LOGOUT REALIZADO                          ║");
         System.out.println("║                                                              ║");
-        System.out.println("║            Obrigado por usar o sistema, Admin!              ║");
+        System.out.println("║            Obrigado por usar o sistema, Admin!               ║");
         System.out.println("║                                                              ║");
         System.out.println("╚══════════════════════════════════════════════════════════════╝");
         System.out.println();
@@ -755,4 +1031,5 @@ public class AdminView {
             System.out.println();
         }
     }
+
 }

@@ -1,8 +1,8 @@
 package projetomps.view;
 
 import lombok.AllArgsConstructor;
-import projetomps.controller.FacadeSingletonController;
-import projetomps.model.User;
+import projetomps.business_logic.controller.FacadeSingletonController;
+import projetomps.business_logic.model.User;
 import projetomps.util.exception.LoginException;
 import projetomps.util.exception.RepositoryException;
 
