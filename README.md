@@ -90,4 +90,11 @@ Página 4 - Versão 3 do diagrama de classes:
 
 [https://viewer.diagrams.net/?tags=%7B%7D\&lightbox=1\&highlight=0000ff\&edit=\_blank\&layers=1\&nav=1\&title=casos\_uso\_mps.drawio\&page-id=FyTWmG0w\_ouTMJRqWyir\&dark=auto#Uhttps%3A%2F%2Fdrive.google.com%2Fuc%3Fid%3D1rlWsZLTiEm6y4cQvllX5Dk3r6GLCnoG\_%26export%3Ddownload](https://viewer.diagrams.net/?tags=%7B%7D&lightbox=1&highlight=0000ff&edit=_blank&layers=1&nav=1&title=casos_uso_mps.drawio&page-id=FyTWmG0w_ouTMJRqWyir&dark=auto#Uhttps%3A%2F%2Fdrive.google.com%2Fuc%3Fid%3D1rlWsZLTiEm6y4cQvllX5Dk3r6GLCnoG_%26export%3Ddownload)
 
+Página 5 - Versão 4 do diagrama de classes (Versão mais atual):
+
+https://viewer.diagrams.net/?tags=%7B%7D&lightbox=1&highlight=0000ff&edit=_blank&layers=1&nav=1&title=casos_uso_mps.drawio&page-id=l51aFDUm2rJoQA-2TEDH&dark=auto#Uhttps%3A%2F%2Fdrive.google.com%2Fuc%3Fid%3D1rlWsZLTiEm6y4cQvllX5Dk3r6GLCnoG_%26export%3Ddownload
+
+
 Este diagrama representa a estrutura básica do sistema, incluindo as entidades principais como Taxista, Turno e Agendamento.
+
+
