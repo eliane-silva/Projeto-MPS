@@ -1,13 +1,8 @@
 package projetomps.business_logic.controller;
 
-import java.time.LocalDate;
-import java.util.List;
-
 import projetomps.app_logic.log.AppLogger;
 import projetomps.app_logic.log.AppLoggerFactory;
 import projetomps.business_logic.model.Admin;
-import projetomps.business_logic.model.Relatorio;
-import projetomps.business_logic.model.Rotation;
 import projetomps.business_logic.model.Taxist;
 import projetomps.business_logic.model.User;
 import projetomps.business_logic.service.AuthenticationService;
@@ -26,8 +21,9 @@ public class FacadeSingletonController {
     private final AuthenticationService authenticationService;
 
     private FacadeSingletonController(UserController userController,
-            RotationController rotationController,
-            AuthenticationService authenticationService, RelatorioController relatorioController) {
+                                      RotationController rotationController,
+                                      AuthenticationService authenticationService,
+                                      RelatorioController relatorioController) {
         this.userController = userController;
         this.rotationController = rotationController;
         this.authenticationService = authenticationService;
@@ -35,16 +31,18 @@ public class FacadeSingletonController {
     }
 
     public static synchronized FacadeSingletonController getInstance(UserController userController,
-            RotationController rotationController,
-            AuthenticationService authenticationService,
-            RelatorioController relatorioController) {
+                                                                     RotationController rotationController,
+                                                                     AuthenticationService authenticationService,
+                                                                     RelatorioController relatorioController) {
         if (instance == null) {
-            instance = new FacadeSingletonController(userController, rotationController, authenticationService, relatorioController);
+            instance = new FacadeSingletonController(userController, rotationController,
+                    authenticationService, relatorioController);
             log.info("FacadeSingletonController inicializado");
         }
         return instance;
     }
 
+    // Métodos de autenticação
     public User autenticarUsuario(String login, String senha) throws LoginException, RepositoryException {
         log.debug("Tentando autenticar usuário: {}", login);
         return authenticationService.autenticarUsuario(login, senha);
@@ -56,6 +54,7 @@ public class FacadeSingletonController {
         return tipo;
     }
 
+    // Métodos de autorização
     public boolean isAuthorizedForAdmim(User user) {
         boolean ok = user instanceof Admin;
         log.debug("isAuthorizedForAdmim({}) -> {}", user != null ? user.getLogin() : "null", ok);
@@ -74,6 +73,7 @@ public class FacadeSingletonController {
         return ok;
     }
 
+    // Getters para os controllers
     public UserController getUserController() {
         return userController;
     }
@@ -82,6 +82,11 @@ public class FacadeSingletonController {
         return rotationController;
     }
 
+    public RelatorioController getRelatorioController() {
+        return relatorioController;
+    }
+
+    // Métodos de criação de usuários
     public Optional<Admin> criarAdmin(String login, String senha, User requestingUser) {
         if (!canAccessUserManagement(requestingUser)) {
             log.warn("Usuário {} tentou criar admin sem permissão",
@@ -101,13 +106,4 @@ public class FacadeSingletonController {
         log.info("Criando Taxista: {}", login);
         return userController.criarTaxista(login, senha, name, email);
     }
-
-    public Relatorio gerarRelatorio(LocalDate dataInicio, LocalDate dataFim) throws RepositoryException {
-        return relatorioController.getRelatorio(dataInicio, dataFim);
-    }
-
-    public void baixarRelatorio(LocalDate inicio, LocalDate fim, String tipo, String caminho) throws RepositoryException {
-        relatorioController.baixarRelatorio(inicio, fim, tipo, caminho);
-    }
-
 }

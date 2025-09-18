@@ -9,14 +9,27 @@ import projetomps.util.exception.RepositoryException;
 
 @AllArgsConstructor
 public class RelatorioController {
-    private RelatorioService relatorioService;
+    private final RelatorioService relatorioService;
 
-    public Relatorio getRelatorio(LocalDate dataInicio, LocalDate dataFim) throws RepositoryException {
-        return relatorioService.gerarRelatorio(dataInicio, dataFim);
+    public Relatorio gerarRelatorioGeral() throws RepositoryException {
+        return relatorioService.gerarRelatorioGeral();
     }
 
-    public void baixarRelatorio(LocalDate inicio, LocalDate fim, String tipo, String caminho) throws RepositoryException {
-        Relatorio relatorio = relatorioService.gerarRelatorio(inicio, fim);
-        relatorioService.exportarRelatorio(relatorio, tipo, caminho);
+    public Relatorio gerarRelatorioSemanal(LocalDate dataReferencia) throws RepositoryException {
+        return relatorioService.gerarRelatorioSemanal(dataReferencia);
+    }
+
+    public Relatorio gerarRelatorioMensal(int mes, int ano) throws RepositoryException {
+        return relatorioService.gerarRelatorioMensal(mes, ano);
+    }
+
+    //Exporta relatório em formato HTML ou PDF
+    public void exportarRelatorio(Relatorio relatorio, String formato, String caminhoArquivo)
+            throws RepositoryException {
+        try {
+            relatorioService.exportarRelatorio(relatorio, formato, caminhoArquivo);
+        } catch (Exception e) {
+            throw new RepositoryException("Erro ao exportar relatório: " + e.getMessage(), e);
+        }
     }
 }
