@@ -7,7 +7,6 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import lombok.AllArgsConstructor;
 import projetomps.app_logic.dao.RotationDAO;
 import projetomps.app_logic.log.AppLogger;
 import projetomps.app_logic.log.AppLoggerFactory;
@@ -15,10 +14,13 @@ import projetomps.business_logic.model.Relatorio;
 import projetomps.business_logic.model.Rotation;
 import projetomps.util.exception.RepositoryException;
 
-@AllArgsConstructor
 public class RelatorioService {
     private static final AppLogger log = AppLoggerFactory.getLogger(RotationService.class);
     private final RotationDAO rotationDAO;
+
+    public RelatorioService(RotationDAO rotationDAO) {
+        this.rotationDAO = rotationDAO;
+    }
 
     public Relatorio gerarRelatorio(LocalDate dataInicio, LocalDate dataFim) throws RepositoryException {
         log.info("Gerando relatório.");
@@ -28,8 +30,9 @@ public class RelatorioService {
         int totalHoras = dados.get(0);
         int totalDiasFinalDeSemana = dados.get(1);
 
-        String conteudo = String.format("Horas trabalhadas: %d\nDias no final de semana: %d", totalHoras,
-                totalDiasFinalDeSemana);
+        String conteudo = String.format(
+                "Horas trabalhadas: %d%nDias no final de semana: %d",
+                totalHoras, totalDiasFinalDeSemana);
 
         Relatorio relatorio = new Relatorio();
         relatorio.setDate(LocalDate.now());
@@ -38,8 +41,17 @@ public class RelatorioService {
         return relatorio;
     }
 
-    public void exportarRelatorio(Relatorio relatorio) {
-
+    /** Exporta usando Template Method (HTML/PDF). */
+    public void exportarRelatorio(Relatorio relatorio, String tipo, String caminhoArquivo) {
+        RelatorioTemplate template;
+        if ("HTML".equalsIgnoreCase(tipo)) {
+            template = new RelatorioHTML();
+        } else if ("PDF".equalsIgnoreCase(tipo)) {
+            template = new RelatorioPDF();
+        } else {
+            throw new IllegalArgumentException("Tipo de relatório não suportado: " + tipo);
+        }
+        template.exportar(relatorio, caminhoArquivo);
     }
 
     private List<Rotation> buscarDados() throws RepositoryException {
@@ -69,11 +81,6 @@ public class RelatorioService {
         List<Integer> lista = new ArrayList<>();
         lista.add(totalHoras);
         lista.add(totalDiasFinalDeSemana);
-
         return lista;
-    }
-
-    private Relatorio montarHTML() {
-        return null;
     }
 }

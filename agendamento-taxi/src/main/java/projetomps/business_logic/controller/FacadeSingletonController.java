@@ -105,4 +105,9 @@ public class FacadeSingletonController {
     public Relatorio gerarRelatorio(LocalDate dataInicio, LocalDate dataFim) throws RepositoryException {
         return relatorioController.getRelatorio(dataInicio, dataFim);
     }
+
+    public void baixarRelatorio(LocalDate inicio, LocalDate fim, String tipo, String caminho) throws RepositoryException {
+        relatorioController.baixarRelatorio(inicio, fim, tipo, caminho);
+    }
+
 }

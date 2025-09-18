@@ -3,6 +3,7 @@ package projetomps.view;
 import lombok.AllArgsConstructor;
 import projetomps.business_logic.controller.FacadeSingletonController;
 import projetomps.business_logic.model.Admin;
+import projetomps.business_logic.model.Relatorio;
 import projetomps.business_logic.model.Rotation;
 import projetomps.business_logic.model.Taxist;
 import projetomps.business_logic.model.User;
@@ -716,19 +717,38 @@ public class AdminView {
     private void mostrarRelatorio() {
         try {
             limparTela();
-            String relatorio = controller.gerarRelatorio(LocalDate.MIN, LocalDate.MAX).getConteudo();
+            var relatorio = controller.gerarRelatorio(LocalDate.MIN, LocalDate.MAX);
+
             System.out.println("╔══════════════════════════════════════════════════════════════╗");
             System.out.println("║                         RELATÓRIO                            ║");
             System.out.println("╚══════════════════════════════════════════════════════════════╝");
             System.out.println();
 
-            System.out.println(relatorio);
+            System.out.println(relatorio.getConteudo());
+            System.out.println();
+
+            System.out.print("Deseja exportar? (1-HTML, 2-PDF, 0-Não): ");
+            int escolha = lerOpcao();
+
+            if (escolha == 1) {
+                System.out.print("Informe o caminho (ex: relatorio.html): ");
+                String caminho = lerEntrada();
+                controller.baixarRelatorio(LocalDate.MIN, LocalDate.MAX, "HTML", caminho);
+                exibirSucesso("Relatório exportado em HTML!");
+            } else if (escolha == 2) {
+                System.out.print("Informe o caminho (ex: relatorio.pdf): ");
+                String caminho = lerEntrada();
+                controller.baixarRelatorio(LocalDate.MIN, LocalDate.MAX, "PDF", caminho);
+                exibirSucesso("Relatório exportado em PDF!");
+            } else {
+                System.out.println("Exportação cancelada.");
+            }
 
             pausar();
-
             limparTela();
         } catch (Exception e) {
-            System.out.println("Erro mostrando relatorio");
+            exibirErro("Erro mostrando/exportando relatório: " + e.getMessage());
+            pausar();
         }
     }
 
@@ -781,4 +801,5 @@ public class AdminView {
             System.out.println();
         }
     }
+
 }

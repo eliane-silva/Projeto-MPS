@@ -15,7 +15,8 @@ public class RelatorioController {
         return relatorioService.gerarRelatorio(dataInicio, dataFim);
     }
 
-    public void ebaixarPDF() {
-
+    public void baixarRelatorio(LocalDate inicio, LocalDate fim, String tipo, String caminho) throws RepositoryException {
+        Relatorio relatorio = relatorioService.gerarRelatorio(inicio, fim);
+        relatorioService.exportarRelatorio(relatorio, tipo, caminho);
     }
 }
