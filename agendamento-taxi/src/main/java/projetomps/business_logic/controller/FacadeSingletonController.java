@@ -2,13 +2,13 @@ package projetomps.business_logic.controller;
 
 import projetomps.app_logic.log.AppLogger;
 import projetomps.app_logic.log.AppLoggerFactory;
+import projetomps.business_logic.command.CommandInvoker;
 import projetomps.business_logic.model.Admin;
 import projetomps.business_logic.model.Taxist;
 import projetomps.business_logic.model.User;
 import projetomps.business_logic.service.AuthenticationService;
 import projetomps.util.exception.LoginException;
 import projetomps.util.exception.RepositoryException;
-
 import java.util.Optional;
 
 public class FacadeSingletonController {
@@ -19,24 +19,28 @@ public class FacadeSingletonController {
     private final RotationController rotationController;
     private final RelatorioController relatorioController;
     private final AuthenticationService authenticationService;
+    private final CommandInvoker commandInvoker;
 
     private FacadeSingletonController(UserController userController,
                                       RotationController rotationController,
                                       AuthenticationService authenticationService,
-                                      RelatorioController relatorioController) {
+                                      RelatorioController relatorioController,
+                                      CommandInvoker commandInvoker) {
         this.userController = userController;
         this.rotationController = rotationController;
         this.authenticationService = authenticationService;
         this.relatorioController = relatorioController;
+        this.commandInvoker = commandInvoker;
     }
 
     public static synchronized FacadeSingletonController getInstance(UserController userController,
                                                                      RotationController rotationController,
                                                                      AuthenticationService authenticationService,
-                                                                     RelatorioController relatorioController) {
+                                                                     RelatorioController relatorioController,
+                                                                     CommandInvoker commandInvoker) {
         if (instance == null) {
             instance = new FacadeSingletonController(userController, rotationController,
-                    authenticationService, relatorioController);
+                    authenticationService, relatorioController, commandInvoker);
             log.info("FacadeSingletonController inicializado");
         }
         return instance;

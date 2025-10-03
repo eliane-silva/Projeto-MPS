@@ -48,6 +48,16 @@ public class TaxistView {
                     case 6:
                         atualizarDadosPessoais();
                         break;
+                    case 7:
+                        controller.getRotationController().undo();
+                        exibirSucesso("Última ação desfeita!");
+                        pausar();
+                        break;
+                    case 8:
+                        controller.getRotationController().redo();
+                        exibirSucesso("Última ação refeita!");
+                        pausar();
+                        break;
                     case 0:
                         continuar = false;
                         exibirMensagemLogout();
@@ -77,6 +87,7 @@ public class TaxistView {
     }
 
     private void exibirOpcoesTaxista() {
+        // MODIFICADO: Adicionadas opções de Desfazer/Refazer
         System.out.println("┌──────────────────────────────────────────────────────────────┐");
         System.out.println("│                      MENU TAXISTA                            │");
         System.out.println("├──────────────────────────────────────────────────────────────┤");
@@ -86,6 +97,10 @@ public class TaxistView {
         System.out.println("│  4. Cancelar Rotação                                         │");
         System.out.println("│  5. Ver Todas as Rotações do Sistema                         │");
         System.out.println("│  6. Atualizar Meus Dados                                     │");
+        System.out.println("├╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤");
+        System.out.println("│  7. Desfazer última ação                                     │");
+        System.out.println("│  8. Refazer última ação                                      │");
+        System.out.println("├──────────────────────────────────────────────────────────────┤");
         System.out.println("│  0. Logout                                                   │");
         System.out.println("└──────────────────────────────────────────────────────────────┘");
         System.out.print("Escolha uma opção: ");

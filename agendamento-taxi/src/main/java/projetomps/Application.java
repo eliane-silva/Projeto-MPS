@@ -3,6 +3,7 @@ package projetomps;
 import projetomps.app_logic.dao.DAOFactory;
 import projetomps.app_logic.dao.RotationDAO;
 import projetomps.app_logic.dao.UserDAO;
+import projetomps.business_logic.command.CommandInvoker;
 import projetomps.business_logic.controller.FacadeSingletonController;
 import projetomps.business_logic.controller.RelatorioController;
 import projetomps.business_logic.controller.RotationController;
@@ -28,15 +29,17 @@ public class Application {
 
             UserService userService = new UserService(userDAO);
             RotationService rotationService = new RotationService(rotationDAO);
+            RotationService rotationService = new RotationService(rotationDAO);
             AuthenticationService authenticationService = new AuthenticationService(userDAO);
             RelatorioService relatorioService = new RelatorioService(rotationDAO);
+            CommandInvoker commandInvoker = new CommandInvoker();
 
-            UserController userController = new UserController(userService);
-            RotationController rotationController = new RotationController(rotationService);
+            UserController userController = new UserController(userService, commandInvoker);
+            RotationController rotationController = new RotationController(rotationService, commandInvoker);
             RelatorioController relatorioController = new RelatorioController(relatorioService);
 
             FacadeSingletonController facadeController = FacadeSingletonController.getInstance(
-                    userController, rotationController, authenticationService, relatorioController);
+                    userController, rotationController, authenticationService, relatorioController, commandInvoker);
 
             Scanner scanner = new Scanner(System.in);
 

@@ -50,6 +50,17 @@ public class UserView {
                     case 7:
                         exibirEstatisticas();
                         break;
+                    // NOVO: Casos para Undo e Redo
+                    case 8:
+                        controller.getUserController().undo();
+                        exibirSucesso("Última ação desfeita com sucesso!");
+                        pausar();
+                        break;
+                    case 9:
+                        controller.getUserController().redo();
+                        exibirSucesso("Última ação refeita com sucesso!");
+                        pausar();
+                        break;
                     case 0:
                         continuar = false;
                         exibirMensagemSaida();
@@ -74,6 +85,7 @@ public class UserView {
     }
 
     private void exibirOpcoes() {
+        // MODIFICADO: Adicionadas opções de Undo/Redo
         System.out.println("┌──────────────────────────────────────────────────────────────┐");
         System.out.println("│                      MENU DE USUÁRIOS                        │");
         System.out.println("├──────────────────────────────────────────────────────────────┤");
@@ -84,6 +96,10 @@ public class UserView {
         System.out.println("│  5. Atualizar Usuário                                        │");
         System.out.println("│  6. Deletar Usuário                                          │");
         System.out.println("│  7. Estatísticas                                             │");
+        System.out.println("├╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤");
+        System.out.println("│  8. Desfazer última ação                                     │");
+        System.out.println("│  9. Refazer última ação                                      │");
+        System.out.println("├──────────────────────────────────────────────────────────────┤");
         System.out.println("│  0. Sair                                                     │");
         System.out.println("└──────────────────────────────────────────────────────────────┘");
         System.out.print("Escolha uma opção: ");

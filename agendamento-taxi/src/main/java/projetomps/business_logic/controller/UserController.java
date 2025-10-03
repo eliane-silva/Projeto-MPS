@@ -11,6 +11,8 @@ import projetomps.business_logic.model.Taxist;
 import projetomps.business_logic.model.User;
 import projetomps.business_logic.service.UserService;
 import projetomps.util.exception.RepositoryException;
+import projetomps.business_logic.command.CommandInvoker;
+import projetomps.business_logic.command.UpdateUserCommand;
 
 @AllArgsConstructor
 public class UserController {
@@ -18,6 +20,7 @@ public class UserController {
             AppLoggerFactory.getLogger(UserController.class);
 
     private final UserService userService;
+    private final CommandInvoker invoker;
 
     public List<User> getAllUsuarios() {
         try {
@@ -101,13 +104,22 @@ public class UserController {
 
     public Optional<Taxist> atualizarTaxista(Taxist taxist) {
         try {
-            Taxist taxistAtualizado = userService.atualizarTaxista(taxist);
-            log.info("Taxista atualizado: {}", taxist.getLogin());
-            return Optional.of(taxistAtualizado);
+            UpdateUserCommand command = new UpdateUserCommand(userService, taxist, null); // oldState será pego no execute
+            invoker.execute(command);
+            log.info("Comando de atualização de taxista executado para: {}", taxist.getLogin());
+            return Optional.of(taxist);
         } catch (RepositoryException e) {
-            log.error("Erro ao atualizar taxista: {}", e, taxist != null ? taxist.getLogin() : "null");
+            log.error("Erro ao executar comando de atualização de taxista: {}", e, taxist != null ? taxist.getLogin() : "null");
             return Optional.empty();
         }
+    }
+
+    public void undo() {
+        invoker.undo();
+    }
+
+    public void redo() {
+        invoker.redo();
     }
 
     public List<Taxist> buscarTodosTaxistas() {

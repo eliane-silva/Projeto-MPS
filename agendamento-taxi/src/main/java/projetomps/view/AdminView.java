@@ -107,6 +107,8 @@ public class AdminView {
                 System.out.println("│  2. Cadastrar Taxista                                        │");
                 System.out.println("│  3. Atualizar Usuário                                        │");
                 System.out.println("│  4. Visualizar Detalhes do Usuário                           │");
+                System.out.println("│  5. Desfazer última ação de usuário                          │");
+                System.out.println("│  6. Refazer última ação de usuário                           │");
                 System.out.println("│  0. Voltar                                                   │");
                 System.out.println("└──────────────────────────────────────────────────────────────┘");
                 System.out.print("Escolha uma opção: ");
@@ -125,6 +127,16 @@ public class AdminView {
                         break;
                     case 4:
                         visualizarDetalhesUsuario();
+                        break;
+                    case 5:
+                        controller.getUserController().undo();
+                        exibirSucesso("Última ação de usuário desfeita!");
+                        pausar();
+                        break;
+                    case 6:
+                        controller.getUserController().redo();
+                        exibirSucesso("Última ação de usuário refeita!");
+                        pausar();
                         break;
                     case 0:
                         continuar = false;
@@ -713,8 +725,6 @@ public class AdminView {
         pausar();
         limparTela();
     }
-
-    // Substitua apenas o método mostrarRelatorio() na classe AdminView existente
 
     private void mostrarRelatorio() {
         boolean continuarRelatorios = true;
