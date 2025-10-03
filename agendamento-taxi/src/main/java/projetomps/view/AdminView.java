@@ -129,13 +129,33 @@ public class AdminView {
                         visualizarDetalhesUsuario();
                         break;
                     case 5:
-                        controller.getUserController().undo();
-                        exibirSucesso("Última ação de usuário desfeita!");
+                        if (controller.getUserController().canUndo()) {
+                            boolean sucesso = controller.getUserController().undo();
+                            if (sucesso) {
+                                exibirSucesso("Última ação de usuário desfeita!");
+                            } else {
+                                exibirErro("Erro ao desfazer a ação.");
+                            }
+                        } else {
+                            System.out.println();
+                            System.out.println("ℹ Não há ações para desfazer.");
+                            System.out.println();
+                        }
                         pausar();
                         break;
                     case 6:
-                        controller.getUserController().redo();
-                        exibirSucesso("Última ação de usuário refeita!");
+                        if (controller.getUserController().canRedo()) {
+                            boolean sucesso = controller.getUserController().redo();
+                            if (sucesso) {
+                                exibirSucesso("Última ação de usuário refeita!");
+                            } else {
+                                exibirErro("Erro ao refazer a ação.");
+                            }
+                        } else {
+                            System.out.println();
+                            System.out.println("ℹ Não há ações para refazer.");
+                            System.out.println();
+                        }
                         pausar();
                         break;
                     case 0:

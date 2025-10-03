@@ -14,18 +14,13 @@ public class CommandInvoker {
     private static final AppLogger log = AppLoggerFactory.getLogger(CommandInvoker.class);
     private final Deque<Command> undoStack = new ArrayDeque<>();
     private final Deque<Command> redoStack = new ArrayDeque<>();
-    private static final int MAX_HISTORY_SIZE = 10; // Limite do histórico
+    private static final int MAX_HISTORY_SIZE = 10;
 
-    /**
-     * Executa um comando e o adiciona à pilha de undo.
-     * @param command O comando a ser executado.
-     * @throws RepositoryException se a execução do comando falhar.
-     */
     public void execute(Command command) throws RepositoryException {
         try {
             command.execute();
             addToUndoStack(command);
-            redoStack.clear(); // Uma nova ação limpa a pilha de redo.
+            redoStack.clear();
             log.info("Comando executado: {}", command.getClass().getSimpleName());
         } catch (RepositoryException e) {
             log.error("Falha ao executar comando: {}", e, command.getClass().getSimpleName());
@@ -35,47 +30,61 @@ public class CommandInvoker {
 
     /**
      * Desfaz o último comando executado.
+     * @return true se conseguiu desfazer, false se não havia comandos
      */
-    public void undo() {
+    public boolean undo() {
         if (!undoStack.isEmpty()) {
             Command command = undoStack.pop();
             try {
                 command.undo();
                 redoStack.push(command);
                 log.info("Comando desfeito: {}", command.getClass().getSimpleName());
+                return true;
             } catch (RepositoryException e) {
                 log.error("Falha ao desfazer comando: {}", e, command.getClass().getSimpleName());
-                // Opcional: Adicionar o comando de volta à pilha de undo se o undo falhar.
                 undoStack.push(command);
+                return false;
             }
         } else {
             log.warn("Pilha de undo está vazia. Nenhuma ação para desfazer.");
+            return false;
         }
     }
 
     /**
      * Refaz o último comando desfeito.
+     * @return true se conseguiu refazer, false se não havia comandos
      */
-    public void redo() {
+    public boolean redo() {
         if (!redoStack.isEmpty()) {
             Command command = redoStack.pop();
             try {
-                command.execute(); // Refazer é simplesmente executar novamente.
+                command.execute();
                 addToUndoStack(command);
                 log.info("Comando refeito: {}", command.getClass().getSimpleName());
+                return true;
             } catch (RepositoryException e) {
                 log.error("Falha ao refazer comando: {}", e, command.getClass().getSimpleName());
-                // Opcional: Adicionar o comando de volta à pilha de redo se o redo falhar.
                 redoStack.push(command);
+                return false;
             }
         } else {
             log.warn("Pilha de redo está vazia. Nenhuma ação para refazer.");
+            return false;
         }
+    }
+
+    public boolean canUndo() {
+        return !undoStack.isEmpty();
+    }
+
+    public boolean canRedo() {
+        return !redoStack.isEmpty();
     }
 
     private void addToUndoStack(Command command) {
         if (undoStack.size() >= MAX_HISTORY_SIZE) {
-            undoStack.removeLast(); // Remove o comando mais antigo.
+            undoStack.removeLast();
         }
         undoStack.push(command);
     }

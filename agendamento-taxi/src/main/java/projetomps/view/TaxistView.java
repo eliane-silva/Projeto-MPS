@@ -49,13 +49,33 @@ public class TaxistView {
                         atualizarDadosPessoais();
                         break;
                     case 7:
-                        controller.getRotationController().undo();
-                        exibirSucesso("Última ação desfeita!");
+                        if (controller.getRotationController().canUndo()) {
+                            boolean sucesso = controller.getRotationController().undo();
+                            if (sucesso) {
+                                exibirSucesso("Última ação desfeita!");
+                            } else {
+                                exibirErro("Erro ao desfazer a ação.");
+                            }
+                        } else {
+                            System.out.println();
+                            System.out.println("ℹ Não há ações para desfazer.");
+                            System.out.println();
+                        }
                         pausar();
                         break;
                     case 8:
-                        controller.getRotationController().redo();
-                        exibirSucesso("Última ação refeita!");
+                        if (controller.getRotationController().canRedo()) {
+                            boolean sucesso = controller.getRotationController().redo();
+                            if (sucesso) {
+                                exibirSucesso("Última ação refeita!");
+                            } else {
+                                exibirErro("Erro ao refazer a ação.");
+                            }
+                        } else {
+                            System.out.println();
+                            System.out.println("ℹ Não há ações para refazer.");
+                            System.out.println();
+                        }
                         pausar();
                         break;
                     case 0:
@@ -87,7 +107,6 @@ public class TaxistView {
     }
 
     private void exibirOpcoesTaxista() {
-        // MODIFICADO: Adicionadas opções de Desfazer/Refazer
         System.out.println("┌──────────────────────────────────────────────────────────────┐");
         System.out.println("│                      MENU TAXISTA                            │");
         System.out.println("├──────────────────────────────────────────────────────────────┤");
@@ -97,7 +116,6 @@ public class TaxistView {
         System.out.println("│  4. Cancelar Rotação                                         │");
         System.out.println("│  5. Ver Todas as Rotações do Sistema                         │");
         System.out.println("│  6. Atualizar Meus Dados                                     │");
-        System.out.println("├╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤");
         System.out.println("│  7. Desfazer última ação                                     │");
         System.out.println("│  8. Refazer última ação                                      │");
         System.out.println("├──────────────────────────────────────────────────────────────┤");

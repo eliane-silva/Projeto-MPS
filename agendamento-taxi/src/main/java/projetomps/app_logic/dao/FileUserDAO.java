@@ -8,31 +8,31 @@ import projetomps.util.exception.RepositoryException;
 public class FileUserDAO implements UserDAO {
     @Override
     public User salvar(User usuario) throws RepositoryException {
-        return null;
+        throw new UnsupportedOperationException("FileUserDAO não implementado");
     }
 
     @Override
     public User buscarPorId(int id) throws RepositoryException {
-        return null;
+        throw new UnsupportedOperationException("FileUserDAO não implementado");
     }
 
     @Override
     public List<User> buscarTodos() throws RepositoryException {
-        return null;
+        throw new UnsupportedOperationException("FileUserDAO não implementado");
     }
 
     @Override
     public User atualizar(User usuario) throws RepositoryException {
-        return null;
+        throw new UnsupportedOperationException("FileUserDAO não implementado");
     }
 
     @Override
     public boolean excluir(int id) throws RepositoryException {
-        return false;
+        throw new UnsupportedOperationException("FileUserDAO não implementado");
     }
 
     @Override
     public User buscarPorLogin(String login) throws RepositoryException {
-        return null;
+        throw new UnsupportedOperationException("FileUserDAO não implementado");
     }
 }

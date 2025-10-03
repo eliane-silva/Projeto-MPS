@@ -3,6 +3,7 @@ package projetomps.business_logic.model;
 import java.util.Objects;
 import lombok.Getter;
 import lombok.Setter;
+import projetomps.business_logic.memento.UserMemento;
 
 @Getter
 @Setter
@@ -16,6 +17,13 @@ public class Taxist extends User {
 
     public Taxist() {
         super();
+    }
+
+    @Override
+    public void restoreFromMemento(UserMemento memento) {
+        super.restoreFromMemento(memento);
+        this.name = memento.getName();
+        this.email = memento.getEmail();
     }
 
     @Override

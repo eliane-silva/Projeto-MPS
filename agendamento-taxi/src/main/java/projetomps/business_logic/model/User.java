@@ -3,6 +3,7 @@ package projetomps.business_logic.model;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import projetomps.business_logic.memento.UserMemento;
 
 import java.util.Objects;
 
@@ -30,6 +31,20 @@ public abstract class User {
 
     public void setSenha(String senha) {
         this.senha = senha != null ? senha.trim() : null;
+    }
+
+    public UserMemento saveToMemento() {
+        String tipo = this instanceof Admin ? "ADMIN" : "TAXIST";
+        String name = this instanceof Taxist ? ((Taxist) this).getName() : null;
+        String email = this instanceof Taxist ? ((Taxist) this).getEmail() : null;
+
+        return new UserMemento(id, login, senha, tipo, name, email);
+    }
+
+    public void restoreFromMemento(UserMemento memento) {
+        this.id = memento.getId();
+        this.login = memento.getLogin();
+        this.senha = memento.getSenha();
     }
 
     @Override

@@ -104,7 +104,7 @@ public class UserController {
 
     public Optional<Taxist> atualizarTaxista(Taxist taxist) {
         try {
-            UpdateUserCommand command = new UpdateUserCommand(userService, taxist, null); // oldState será pego no execute
+            UpdateUserCommand command = new UpdateUserCommand(userService, taxist);
             invoker.execute(command);
             log.info("Comando de atualização de taxista executado para: {}", taxist.getLogin());
             return Optional.of(taxist);
@@ -114,12 +114,20 @@ public class UserController {
         }
     }
 
-    public void undo() {
-        invoker.undo();
+    public boolean undo() {
+        return invoker.undo();
     }
 
-    public void redo() {
-        invoker.redo();
+    public boolean redo() {
+        return invoker.redo();
+    }
+
+    public boolean canUndo() {
+        return invoker.canUndo();
+    }
+
+    public boolean canRedo() {
+        return invoker.canRedo();
     }
 
     public List<Taxist> buscarTodosTaxistas() {

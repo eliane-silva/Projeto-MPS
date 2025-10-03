@@ -27,19 +27,32 @@ public class Application {
             UserDAO userDAO = memoryFactory.getUserDAO();
             RotationDAO rotationDAO = memoryFactory.getRotationDAO();
 
+            // Services
             UserService userService = new UserService(userDAO);
-            RotationService rotationService = new RotationService(rotationDAO);
             RotationService rotationService = new RotationService(rotationDAO);
             AuthenticationService authenticationService = new AuthenticationService(userDAO);
             RelatorioService relatorioService = new RelatorioService(rotationDAO);
+
+            // Command Invoker (gerencia Command Pattern)
             CommandInvoker commandInvoker = new CommandInvoker();
 
+            // Controllers com UserService injetado para Memento Pattern
             UserController userController = new UserController(userService, commandInvoker);
-            RotationController rotationController = new RotationController(rotationService, commandInvoker);
+            RotationController rotationController = new RotationController(
+                    rotationService,
+                    userService,  // Necessário para restaurar Taxist no Memento
+                    commandInvoker
+            );
             RelatorioController relatorioController = new RelatorioController(relatorioService);
 
+            // Facade Singleton
             FacadeSingletonController facadeController = FacadeSingletonController.getInstance(
-                    userController, rotationController, authenticationService, relatorioController, commandInvoker);
+                    userController,
+                    rotationController,
+                    authenticationService,
+                    relatorioController,
+                    commandInvoker
+            );
 
             Scanner scanner = new Scanner(System.in);
 
@@ -75,15 +88,26 @@ public class Application {
 
     private static void inicializarDadosIniciais(UserService userService) {
         try {
+            System.out.println("╔══════════════════════════════════════════════════════════════╗");
+            System.out.println("║          Inicializando dados do sistema...                   ║");
+            System.out.println("╚══════════════════════════════════════════════════════════════╝");
+            System.out.println();
 
             // Admin padrão
             userService.criarAdmin("admin", "admin123");
+            System.out.println("✓ Admin padrão criado (login: admin, senha: admin123)");
 
             // Taxistas de exemplo
             userService.criarTaxista("joao", "senha123", "João Silva", "joao@email.com");
-            userService.criarTaxista("maria", "senha456", "Maria Santos", "maria@email.com");
+            System.out.println("✓ Taxista 'João Silva' criado");
 
+            userService.criarTaxista("maria", "senha456", "Maria Santos", "maria@email.com");
+            System.out.println("✓ Taxista 'Maria Santos' criado");
+
+            System.out.println();
             System.out.println("Dados iniciais criados com sucesso!");
+            System.out.println("Padrões implementados: Command + Memento");
+            System.out.println();
 
         } catch (Exception e) {
             System.err.println("Erro ao inicializar dados: " + e.getMessage());

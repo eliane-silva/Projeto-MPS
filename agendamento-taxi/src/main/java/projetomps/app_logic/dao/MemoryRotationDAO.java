@@ -34,6 +34,37 @@ public class MemoryRotationDAO implements RotationDAO {
     }
 
     @Override
+    public Rotation salvarComId(Rotation rotation) throws RepositoryException {
+        try {
+            if (rotation == null) {
+                throw new RepositoryException("Rotação não pode ser nula");
+            }
+
+            if (rotation.getIdRotation() <= 0) {
+                throw new RepositoryException("ID deve ser positivo ao usar salvarComId");
+            }
+
+            // Verifica se já existe rotação com este ID
+            if (buscarPorId(rotation.getIdRotation()) != null) {
+                throw new RepositoryException("Já existe uma rotação com ID: " + rotation.getIdRotation());
+            }
+
+            // Atualiza o gerador se necessário (para evitar colisões futuras)
+            if (rotation.getIdRotation() >= idGenerator.get()) {
+                idGenerator.set(rotation.getIdRotation() + 1);
+            }
+
+            rotations.add(rotation);
+            log.info("Rotação salva: {}", rotation.getIdRotation());
+            return rotation;
+        } catch (Exception e) {
+            if (e instanceof RepositoryException) throw e;
+            log.error("Erro ao salvar rotação com ID", e);
+            throw new RepositoryException("Erro ao salvar rotação com ID: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
     public Rotation buscarPorId(int id) throws RepositoryException {
         try {
             return rotations.stream()

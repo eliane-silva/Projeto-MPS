@@ -38,7 +38,7 @@ public class RotationService {
             throw new RepositoryException("Taxista é obrigatório");
         }
         if (rotation.getEndTime() != null &&
-            rotation.getEndTime().isBefore(rotation.getStartTime())) {
+                rotation.getEndTime().isBefore(rotation.getStartTime())) {
             throw new RepositoryException("Horário de fim deve ser posterior ao horário de início");
         }
 
@@ -52,6 +52,41 @@ public class RotationService {
             return rotacaoSalva != null;
         } catch (RepositoryException e) {
             log.error("Erro ao criar rotação", e);
+            throw e;
+        }
+    }
+
+    public Rotation createRotationComId(Rotation rotation) throws RepositoryException {
+        if (rotation == null) {
+            throw new RepositoryException("Rotação não pode ser nula");
+        }
+        log.info("Criando rotação com ID preservado: {}", rotation.getIdRotation());
+
+        // Validações básicas
+        if (rotation.getDate() == null) {
+            throw new RepositoryException("Data da rotação é obrigatória");
+        }
+        if (rotation.getStartTime() == null) {
+            throw new RepositoryException("Horário de início é obrigatório");
+        }
+        if (rotation.getTaxist() == null) {
+            throw new RepositoryException("Taxista é obrigatório");
+        }
+        if (rotation.getEndTime() != null &&
+                rotation.getEndTime().isBefore(rotation.getStartTime())) {
+            throw new RepositoryException("Horário de fim deve ser posterior ao horário de início");
+        }
+
+        if (rotation.getStatus() == null || rotation.getStatus().trim().isEmpty()) {
+            rotation.setStatus("PENDING");
+        }
+
+        try {
+            Rotation rotacaoSalva = rotationDAO.salvarComId(rotation);
+            log.info("Rotação criada com ID preservado: {}", rotacaoSalva.getIdRotation());
+            return rotacaoSalva;
+        } catch (RepositoryException e) {
+            log.error("Erro ao criar rotação com ID", e);
             throw e;
         }
     }
@@ -81,7 +116,7 @@ public class RotationService {
             throw new RepositoryException("Taxista é obrigatório");
         }
         if (rotation.getEndTime() != null &&
-            rotation.getEndTime().isBefore(rotation.getStartTime())) {
+                rotation.getEndTime().isBefore(rotation.getStartTime())) {
             throw new RepositoryException("Horário de fim deve ser posterior ao horário de início");
         }
 
