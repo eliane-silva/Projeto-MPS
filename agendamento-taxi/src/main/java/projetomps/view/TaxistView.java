@@ -31,7 +31,7 @@ public class TaxistView {
 
                 switch (opcao) {
                     case 1:
-                        criarRotacao();
+                        criarRotacao();               // <- aqui dentro há a opção de usar BASE
                         break;
                     case 2:
                         listarMinhasRotacoes();
@@ -51,11 +51,8 @@ public class TaxistView {
                     case 7:
                         if (controller.getRotationController().canUndo()) {
                             boolean sucesso = controller.getRotationController().undo();
-                            if (sucesso) {
-                                exibirSucesso("Última ação desfeita!");
-                            } else {
-                                exibirErro("Erro ao desfazer a ação.");
-                            }
+                            if (sucesso) exibirSucesso("Última ação desfeita!");
+                            else exibirErro("Erro ao desfazer a ação.");
                         } else {
                             System.out.println();
                             System.out.println("ℹ Não há ações para desfazer.");
@@ -66,11 +63,8 @@ public class TaxistView {
                     case 8:
                         if (controller.getRotationController().canRedo()) {
                             boolean sucesso = controller.getRotationController().redo();
-                            if (sucesso) {
-                                exibirSucesso("Última ação refeita!");
-                            } else {
-                                exibirErro("Erro ao refazer a ação.");
-                            }
+                            if (sucesso) exibirSucesso("Última ação refeita!");
+                            else exibirErro("Erro ao refazer a ação.");
                         } else {
                             System.out.println();
                             System.out.println("ℹ Não há ações para refazer.");
@@ -124,6 +118,10 @@ public class TaxistView {
         System.out.print("Escolha uma opção: ");
     }
 
+    /**
+     * Criar rotação — com opção embutida de USAR uma rotação BASE (Prototype).
+     * Não cria item extra no menu. O usuário escolhe durante o fluxo.
+     */
     private void criarRotacao() {
         try {
             limparTela();
@@ -131,6 +129,53 @@ public class TaxistView {
             System.out.println("║                     CRIAR NOVA ROTAÇÃO                       ║");
             System.out.println("╚══════════════════════════════════════════════════════════════╝");
             System.out.println();
+
+            // Pergunta se deseja usar uma rotação BASE
+            List<Rotation> minhasRotacoes = controller.getRotationController().getAllRotations().stream()
+                    .filter(r -> r.getTaxist() != null && r.getTaxist().getId() == taxist.getId())
+                    .collect(Collectors.toList());
+
+            Rotation baseEscolhida = null;
+            if (!minhasRotacoes.isEmpty()) {
+                System.out.println("Deseja USAR uma rotação BASE como modelo? (S/N)");
+                String usarBase = lerEntrada();
+                if ("S".equalsIgnoreCase(usarBase) || "SIM".equalsIgnoreCase(usarBase)) {
+                    System.out.println();
+                    System.out.println("Selecione a rotação BASE (apenas para preencher os campos):");
+                    System.out.println("┌─────┬────────────┬─────────┬─────────┬───────────┐");
+                    System.out.println("│ ID  │    DATA    │ INÍCIO  │   FIM   │  STATUS   │");
+                    System.out.println("├─────┼────────────┼─────────┼─────────┼───────────┤");
+                    for (Rotation r : minhasRotacoes) {
+                        String endTime = (r.getEndTime() != null) ? r.getEndTime().toString() : "N/A";
+                        System.out.printf("│ %-3d │ %-10s │ %-7s │ %-7s │ %-9s │%n",
+                                r.getIdRotation(), r.getDate(), r.getStartTime(), endTime, r.getStatus());
+                    }
+                    System.out.println("└─────┴────────────┴─────────┴─────────┴───────────┘");
+                    System.out.print("ID da rotação base (0 para pular): ");
+                    int idBase = lerOpcao();
+                    if (idBase != 0) {
+                        baseEscolhida = minhasRotacoes.stream()
+                                .filter(r -> r.getIdRotation() == idBase)
+                                .findFirst()
+                                .orElse(null);
+                        if (baseEscolhida == null) {
+                            exibirErro("Rotação base não encontrada. Continuando sem base…");
+                        }
+                    }
+                }
+            }
+
+            // Coleta de dados (com sugestão caso exista base)
+            System.out.println();
+            if (baseEscolhida != null) {
+                System.out.println("Sugestões da BASE selecionada:");
+                System.out.println("   Data sugerida: " + baseEscolhida.getDate());
+                System.out.println("   Início sugerido: " + baseEscolhida.getStartTime());
+                System.out.println("   Fim sugerido: " + (baseEscolhida.getEndTime() != null ? baseEscolhida.getEndTime() : "N/A"));
+                System.out.println("   Status sugerido: " + baseEscolhida.getStatus());
+                System.out.println();
+                System.out.println("Deixe vazio para usar o valor SUGERIDO.");
+            }
 
             System.out.print("Data da rotação (AAAA-MM-DD): ");
             String dataStr = lerEntrada();
@@ -141,25 +186,31 @@ public class TaxistView {
             System.out.print("Horário de fim (HH:MM) - opcional: ");
             String fimStr = lerEntrada();
 
-            if (dataStr.isEmpty() || inicioStr.isEmpty()) {
-                exibirErro("Data e horário de início são obrigatórios!");
-                pausar();
-                return;
-            }
-
             try {
-                LocalDate data = LocalDate.parse(dataStr);
-                LocalTime horaInicio = LocalTime.parse(inicioStr);
-                LocalTime horaFim = null;
+                // Se usar base e campos vazios, preenche com valores da base
+                LocalDate data = !dataStr.isEmpty() ? LocalDate.parse(dataStr)
+                        : (baseEscolhida != null ? baseEscolhida.getDate() : null);
 
+                LocalTime horaInicio = !inicioStr.isEmpty() ? LocalTime.parse(inicioStr)
+                        : (baseEscolhida != null ? baseEscolhida.getStartTime() : null);
+
+                LocalTime horaFim = null;
                 if (!fimStr.isEmpty()) {
                     horaFim = LocalTime.parse(fimStr);
+                } else if (baseEscolhida != null) {
+                    horaFim = baseEscolhida.getEndTime();
+                }
 
-                    if (horaFim.isBefore(horaInicio)) {
-                        exibirErro("Horário de fim não pode ser anterior ao horário de início!");
-                        pausar();
-                        return;
-                    }
+                if (data == null || horaInicio == null) {
+                    exibirErro("Data e horário de início são obrigatórios!");
+                    pausar();
+                    return;
+                }
+
+                if (horaFim != null && horaFim.isBefore(horaInicio)) {
+                    exibirErro("Horário de fim não pode ser anterior ao horário de início!");
+                    pausar();
+                    return;
                 }
 
                 LocalDate dataMinima = LocalDate.now().plusDays(1);
@@ -170,21 +221,51 @@ public class TaxistView {
                     return;
                 }
 
-                Rotation novaRotacao = new Rotation();
-                novaRotacao.setDate(data);
-                novaRotacao.setStartTime(horaInicio);
-                novaRotacao.setEndTime(horaFim);
-                novaRotacao.setStatus("PENDING");
-                novaRotacao.setTaxist(taxist);
+                Rotation nova;
+                // Se houve BASE, cria usando o Prototype via controller; senão, criação normal
+                if (baseEscolhida != null) {
+                    // Status herdado da base por padrão; se quiser sempre PENDING, faça pós-update.
+                    nova = controller.getRotationController()
+                            .cloneFromPrototype(baseEscolhida, data, horaInicio, horaFim, taxist);
+                } else {
+                    nova = new Rotation();
+                    nova.setDate(data);
+                    nova.setStartTime(horaInicio);
+                    nova.setEndTime(horaFim);
+                    nova.setStatus("PENDING");
+                    nova.setTaxist(taxist);
+                    Boolean ok = controller.getRotationController().createRotation(nova);
+                    if (!ok) nova = null;
+                }
 
-                Boolean sucesso = controller.getRotationController().createRotation(novaRotacao);
-
-                if (sucesso) {
+                if (nova != null) {
                     exibirSucesso("Rotação criada com sucesso!");
-                    System.out.println("📅 Data: " + data);
-                    System.out.println("🕐 Início: " + horaInicio);
-                    System.out.println("🕐 Fim: " + (horaFim != null ? horaFim : "Não definido"));
-                    System.out.println("📋 Status: PENDING");
+
+                    // ========= PRINT DE EXEMPLO: BASE → NOVA =========
+                    if (baseEscolhida != null) {
+                        System.out.println("Exemplo (usando BASE para preencher):");
+                        System.out.println("┌───────────────┬──────────────┬────────────┐");
+                        System.out.println("│ Campo         │     BASE     │    NOVA    │");
+                        System.out.println("├───────────────┼──────────────┼────────────┤");
+                        System.out.printf ("│ Data          │ %-12s │ %-10s │%n",
+                                baseEscolhida.getDate(), nova.getDate());
+                        System.out.printf ("│ Início        │ %-12s │ %-10s │%n",
+                                baseEscolhida.getStartTime(), nova.getStartTime());
+                        System.out.printf ("│ Fim           │ %-12s │ %-10s │%n",
+                                (baseEscolhida.getEndTime() != null ? baseEscolhida.getEndTime() : "N/A"),
+                                (nova.getEndTime() != null ? nova.getEndTime() : "N/A"));
+                        System.out.printf ("│ Status        │ %-12s │ %-10s │%n",
+                                baseEscolhida.getStatus(), nova.getStatus());
+                        System.out.printf ("│ Taxista       │ %-12s │ %-10s │%n",
+                                safeName(baseEscolhida.getTaxist()), safeName(nova.getTaxist()));
+                        System.out.println("└───────────────┴──────────────┴────────────┘");
+                    } else {
+                        // print padrão quando não há base
+                        System.out.println("📅 Data: " + nova.getDate());
+                        System.out.println("🕐 Início: " + nova.getStartTime());
+                        System.out.println("🕐 Fim: " + (nova.getEndTime() != null ? nova.getEndTime() : "Não definido"));
+                        System.out.println("📋 Status: " + nova.getStatus());
+                    }
                 } else {
                     exibirErro("Erro ao criar rotação. Verifique os dados informados.");
                 }
@@ -223,7 +304,6 @@ public class TaxistView {
 
                 for (Rotation r : minhasRotacoes) {
                     String endTime = (r.getEndTime() != null) ? r.getEndTime().toString() : "N/A";
-
                     System.out.printf("│ %-3d │ %-10s │ %-7s │ %-7s │ %-9s │%n",
                             r.getIdRotation(),
                             r.getDate(),
@@ -236,7 +316,6 @@ public class TaxistView {
                 System.out.println();
                 System.out.println("Total de suas rotações: " + minhasRotacoes.size());
 
-                // Estatísticas das rotações
                 long pendentes = minhasRotacoes.stream()
                         .filter(r -> "PENDING".equalsIgnoreCase(r.getStatus())).count();
                 long confirmadas = minhasRotacoes.stream()
@@ -336,7 +415,6 @@ public class TaxistView {
             String novoStatus = lerEntrada();
 
             try {
-                // Aplicar as mudanças se fornecidas
                 if (!novaDataStr.isEmpty()) {
                     LocalDate novaData = LocalDate.parse(novaDataStr);
                     if (novaData.isBefore(LocalDate.now())) {
@@ -369,7 +447,7 @@ public class TaxistView {
                 if (!novoStatus.isEmpty()) {
                     String statusUpper = novoStatus.toUpperCase();
                     if (statusUpper.equals("PENDING") || statusUpper.equals("CONFIRMED") ||
-                            statusUpper.equals("CANCELLED")) {
+                        statusUpper.equals("CANCELLED")) {
                         rotacao.setStatus(statusUpper);
                     } else {
                         exibirErro("Status inválido! Use PENDING, CONFIRMED ou CANCELLED.");
@@ -513,11 +591,8 @@ public class TaxistView {
                 for (Rotation r : rotacoes) {
                     String taxistaInfo = "N/A";
                     if (r.getTaxist() != null) {
-                        if (r.getTaxist().getId() == taxist.getId()) {
-                            taxistaInfo = ">>> VOCÊ <<<";
-                        } else {
-                            taxistaInfo = r.getTaxist().getName();
-                        }
+                        if (r.getTaxist().getId() == taxist.getId()) taxistaInfo = ">>> VOCÊ <<<";
+                        else taxistaInfo = r.getTaxist().getName();
                     }
 
                     String endTime = (r.getEndTime() != null) ? r.getEndTime().toString() : "N/A";
@@ -535,7 +610,6 @@ public class TaxistView {
                 System.out.println();
                 System.out.println("Total de rotações no sistema: " + rotacoes.size());
 
-                // Suas rotações vs outras
                 long minhasRotacoes = rotacoes.stream()
                         .filter(r -> r.getTaxist() != null && r.getTaxist().getId() == taxist.getId())
                         .count();
@@ -577,23 +651,11 @@ public class TaxistView {
             System.out.print("Nova senha (deixe vazio para manter atual): ");
             String novaSenha = lerEntrada();
 
-            // Aplicar mudanças
             boolean alterado = false;
 
-            if (!novoNome.isEmpty()) {
-                taxist.setName(novoNome);
-                alterado = true;
-            }
-
-            if (!novoEmail.isEmpty()) {
-                taxist.setEmail(novoEmail);
-                alterado = true;
-            }
-
-            if (!novaSenha.isEmpty()) {
-                taxist.setSenha(novaSenha);
-                alterado = true;
-            }
+            if (!novoNome.isEmpty()) { taxist.setName(novoNome); alterado = true; }
+            if (!novoEmail.isEmpty()) { taxist.setEmail(novoEmail); alterado = true; }
+            if (!novaSenha.isEmpty()) { taxist.setSenha(novaSenha); alterado = true; }
 
             if (!alterado) {
                 System.out.println("ℹ Nenhuma alteração foi feita.");
@@ -601,7 +663,6 @@ public class TaxistView {
                 var taxistaAtualizado = controller.getUserController().atualizarTaxista(taxist);
                 if (taxistaAtualizado.isPresent()) {
                     exibirSucesso("Dados atualizados com sucesso!");
-                    // Atualizar referência local
                     taxist.setName(taxistaAtualizado.get().getName());
                     taxist.setEmail(taxistaAtualizado.get().getEmail());
                     taxist.setSenha(taxistaAtualizado.get().getSenha());
@@ -616,6 +677,12 @@ public class TaxistView {
 
         pausar();
         limparTela();
+    }
+
+    // ===== utils =====
+
+    private String safeName(Taxist t) {
+        return (t != null && t.getName() != null) ? t.getName() : "N/A";
     }
 
     private void exibirMensagemLogout() {
@@ -663,8 +730,6 @@ public class TaxistView {
     }
 
     private void limparTela() {
-        for (int i = 0; i < 50; i++) {
-            System.out.println();
-        }
+        for (int i = 0; i < 50; i++) System.out.println();
     }
 }
