@@ -52,6 +52,10 @@ public class AdminView {
                     case 7:
                         mostrarRelatorio();
                         break;
+                    case 8:
+                        List<User> usuarios = controller.getUserController().listarUsuariosComIterator();
+                        new UserView(controller, scanner).exibirTabelaUsuarios(usuarios);
+                        break;
                     case 0:
                         continuar = false;
                         exibirMensagemLogout();
@@ -88,6 +92,7 @@ public class AdminView {
         System.out.println("│  5. Listar Todas as Rotações                                 │");
         System.out.println("│  6. Remover Rotação                                          │");
         System.out.println("│  7. Gerar Relatório                                          │");
+        System.out.println("│  8. Listar Usuários com Iterator                             │");
         System.out.println("│  0. Logout                                                   │");
         System.out.println("└──────────────────────────────────────────────────────────────┘");
         System.out.print("Escolha uma opção: ");

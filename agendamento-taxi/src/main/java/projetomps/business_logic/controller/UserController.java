@@ -13,6 +13,8 @@ import projetomps.business_logic.service.UserService;
 import projetomps.util.exception.RepositoryException;
 import projetomps.business_logic.command.CommandInvoker;
 import projetomps.business_logic.command.UpdateUserCommand;
+import projetomps.business_logic.iterator.UserCollection;
+import projetomps.business_logic.iterator.UserIterator;
 
 @AllArgsConstructor
 public class UserController {
@@ -151,4 +153,20 @@ public class UserController {
             return 0;
         }
     }
+
+    public List<User> listarUsuariosComIterator() throws RepositoryException {
+        log.info("Buscando todos os usuários");
+        List<User> usuarios = userService.getAllUsuarios();
+
+        UserCollection collection = new UserCollection(usuarios);
+        UserIterator iterator = collection.createIterator();
+
+        log.info("Listando usuários com Iterator:");
+        while (iterator.hasNext()) {
+            User user = iterator.next();
+            log.info("Usuário encontrado: {}", user.getLogin());
+        }
+
+        return usuarios;
+    } 
 }

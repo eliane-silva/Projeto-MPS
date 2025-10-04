@@ -492,6 +492,37 @@ public class UserView {
         limparTela();
     }
 
+    public void exibirTabelaUsuarios(List<User> usuarios) {
+        if (usuarios.isEmpty()) {
+            System.out.println("Nenhum usuário cadastrado.");
+        } else {
+            System.out.println("┌─────┬─────────────────┬───────────────┬──────────────────────┐");
+            System.out.println("│ ID  │     LOGIN       │      TIPO     │        DETALHES      │");
+            System.out.println("├─────┼─────────────────┼───────────────┼──────────────────────┤");
+
+            for (User user : usuarios) {
+                String tipo = controller.getUserController().getTipoUsuario(user);
+                String detalhes = "";
+
+                if (user instanceof Taxist taxist) {
+                    detalhes = taxist.getName() != null ? taxist.getName() : "Nome não informado";
+                } else if (user instanceof Admin) {
+                    detalhes = "Administrador";
+                } else {
+                    detalhes = "Usuário padrão";
+                }
+
+                System.out.printf("│ %-3d │ %-15s │ %-13s │ %-20s │%n",
+                        user.getId(), user.getLogin(), tipo, detalhes);
+            }
+
+            System.out.println("└─────┴─────────────────┴───────────────┴──────────────────────┘");
+            System.out.println("\nTotal de usuários: " + usuarios.size());
+        }
+        pausar();
+        limparTela();
+    }
+
     private int lerOpcao() {
         try {
             return Integer.parseInt(scanner.nextLine().trim());
